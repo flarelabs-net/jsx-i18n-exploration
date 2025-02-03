@@ -1,0 +1,11 @@
+{
+  "locale": "en",
+  "translations": {
+    "3022994926184248873": "Hello world!",
+    "675993556179541220": "Hello world!",
+    "helloId": "Hello world!",
+    "helloId2": "Hello world!",
+    "5199719776381524455": "Hello {$PH}!",
+    "1805980905397687233": "{$PH} {$PH_1}! How was your {$PH_2} {$PH_3}? {$PH_4}{$PH_5}?"
+  }
+}

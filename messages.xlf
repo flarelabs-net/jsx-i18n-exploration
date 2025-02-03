@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="ng2.template">
+    <body>
+      <trans-unit id="3022994926184248873" datatype="html">
+        <source>Hello world!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11935</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11936</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="675993556179541220" datatype="html">
+        <source>Hello world!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11937</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11938</context>
+        </context-group>
+        <note priority="1" from="meaning">login screen</note>
+      </trans-unit>
+      <trans-unit id="helloId" datatype="html">
+        <source>Hello world!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11939</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="helloId2" datatype="html">
+        <source>Hello world!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11940</context>
+        </context-group>
+        <note priority="1" from="description">a friendly greeting</note>
+        <note priority="1" from="meaning">login screen</note>
+      </trans-unit>
+      <trans-unit id="5199719776381524455" datatype="html">
+        <source>Hello <x id="PH" equiv-text="name$1"/>!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11942</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1911459589592939396" datatype="html">
+        <source>Hello <x id="PH" equiv-text="name"/>! How was your <x id="PH_1" equiv-text="superlative"/> <x id="PH_2" equiv-text="event"/>?</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-BWnzkJF6.js</context>
+          <context context-type="linenumber">11946</context>
+        </context-group>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

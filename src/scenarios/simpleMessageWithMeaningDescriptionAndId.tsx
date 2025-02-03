@@ -1,0 +1,1 @@
+export const simpleMessageWithMeaningDescriptionAndId = <div i18n="login screen|a friendly greeting@@helloId2">Hello world!</div>;
