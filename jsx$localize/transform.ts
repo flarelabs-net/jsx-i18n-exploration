@@ -8,7 +8,13 @@ export function transform(code: string, moduleId: string): TransformResult {
 
   const [i18nElements, i18nAttrs] = findAndCleanupAllI18nElements(ast.program.body);
 
-  rewriteI18nElements(i18nElements, i18nAttrs);
+  if (i18nElements.length > 0 || i18nAttrs.length > 0) {
+    const shouldInjectJsxifyImport = rewriteI18nElements(i18nElements, i18nAttrs);
+
+    if (shouldInjectJsxifyImport) {
+      addJsxifyImport(ast.program.body);
+    }
+  }
 
   const transformed = print(ast, {
     sourceMapName: moduleId
@@ -48,95 +54,115 @@ function findAndCleanupAllI18nElements(rootNode: types.ASTNode): [types.namedTyp
 }
 
 function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAttrs: types.namedTypes.JSXAttribute[]) {
-  i18nElements.forEach((element, index) => {
+  let elementsContainElement = false;
 
-      let i18nAttr = i18nAttrs[index];
-      let i18nAttrValue = i18nAttr.value;
+  i18nElements.forEach((i18nElement, elementIndex) => {
 
-      if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) throw new Error('i18n attribute value must be a literal, was: ' + i18nAttrValue?.type);
+    let i18nAttr = i18nAttrs[elementIndex];
+    let i18nAttrValue = i18nAttr.value;
 
-      const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
-      const templateQuasis: types.namedTypes.TemplateElement[] = [];
-      let lastChildWasAnExpression = false;
+    if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) throw new Error('i18n attribute value must be a literal, was: ' + i18nAttrValue?.type);
 
-      element.children?.forEach((child, index) => {
-        // The first one needs a special treatment
-        if (index === 0) {
+    const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
+    const templateQuasis: types.namedTypes.TemplateElement[] = [];
+    let previousChildWasAnExpression = false;
+    let childContainsElement = false;
+
+    i18nElement.children?.forEach((child, childIndex) => {
+
+      // The first child needs to be prefixed with description, meaning, and/or id (if defined)
+      const translationMessagePrefix = (childIndex === 0 && i18nAttrValue) ? `:${i18nAttrValue.value}:` : '';
+
+      if (types.namedTypes.JSXText.check(child)) {
+
+        templateQuasis.push(types.builders.templateElement.from({
+          value: {
+            raw: translationMessagePrefix + child.value,
+            cooked: translationMessagePrefix + child.value
+          },
+          tail: childIndex === i18nElement.children!.length - 1,
+          loc: child.loc
+        }));
+        previousChildWasAnExpression = false;
+
+      } else if (types.namedTypes.JSXExpressionContainer.check(child)) {
           
-          // if it's a text and we have meaning or description then we need to add it to the template
-          if (types.namedTypes.JSXText.check(child)) {
-            templateQuasis.push(types.builders.templateElement.from({
-              value: {
-                raw: i18nAttrValue ? `:${i18nAttrValue.value}:${child.value}` : child.value, 
-                cooked: i18nAttrValue ? `:${i18nAttrValue.value}:${child.value}` : child.value,
-              },
-              tail: element.children!.length === 1,
-              loc: child.loc
-            }));
+        if (childIndex === 0) {
+          // add an empty template element to the quasis since original element starts with an interpolation
+          // but tagged templates always start with a string, even if it's an empty string
+          templateQuasis.push(types.builders.templateElement.from({
+            value: {
+              raw: translationMessagePrefix,
+              cooked: translationMessagePrefix
+            },
+            tail: false
+          }));
+        }
 
-          } else if (types.namedTypes.JSXExpressionContainer.check(child)) {
-            
-            // add an empty template element to the quasis since original element starts with an interpolation
-            // but tagged templates always start with a string, even if it's an empty string
+        if (types.namedTypes.JSXEmptyExpression.check(child.expression)) {
+          // if it's an empty expression, we don't need to do anything
+        } else {
+
+          if (previousChildWasAnExpression) {
+            // insert an empty template element to separate the expressions
             templateQuasis.push(types.builders.templateElement.from({
               value: {
-                raw: i18nAttrValue ? `:${i18nAttrValue.value}:` : '',
-                cooked: i18nAttrValue ? `:${i18nAttrValue.value}:` : '',
+                raw: '',
+                cooked: ''
               },
               tail: false
             }));
-
-            if (types.namedTypes.JSXEmptyExpression.check(child.expression)) {
-              // if it's an empty expression, we don't need to do anything
-            } else {
-              templateExpressions.push(child.expression);
-              lastChildWasAnExpression = true;
-            }
-          } else {
-            throw new Error('Unexpected child type: ' + child.type);
           }
 
-          // we are done processing the first child, continue to the next one
-          return;
+          templateExpressions.push(child.expression);
+          previousChildWasAnExpression = true;
         }
 
-        if (types.namedTypes.JSXText.check(child)) {
-          templateQuasis.push(types.builders.templateElement.from({
-            value: {
-              raw: child.value,
-              cooked: child.value
-            },
-            tail: index === element.children!.length - 1,
-            loc: child.loc
-          }));
-          lastChildWasAnExpression = false;
-        } else if (types.namedTypes.JSXExpressionContainer.check(child)) {
-          if (types.namedTypes.JSXEmptyExpression.check(child.expression)) {
-            // ignore empty expressions
-          } else {
-            if (lastChildWasAnExpression) {
-              // insert an empty template element to separate the expressions
-              templateQuasis.push(types.builders.templateElement.from({
-                value: {
-                  raw: '',
-                  cooked: ''
-                },
-                tail: false
-              }));
-            }
-            templateExpressions.push(child.expression);
-            lastChildWasAnExpression = true;
-          }
-        }
+      } else if (types.namedTypes.JSXElement.check(child)) {
+        childContainsElement = true;
+
+        // TODO handle the element
+      } else {
+        throw new Error('Unexpected child type: ' + child.type + child.value);
+      }
+    });
+
+    const $localizeExpression = types.builders.taggedTemplateExpression.from({
+      tag: types.builders.identifier.from({ name: '$localize' }),
+      quasi: types.builders.templateLiteral.from({
+        expressions: templateExpressions,
+        quasis: templateQuasis
+      })
+    });
+
+    if (childContainsElement) {
+      elementsContainElement = true;
+
+      const $jsxifyExpression = types.builders.callExpression.from({
+        callee: types.builders.identifier.from({ name: '$jsxify' }),
+        arguments: [
+          $localizeExpression
+        ]
       });
-      
-      element.children = [types.builders.jsxExpressionContainer(
-        types.builders.taggedTemplateExpression.from({
-          tag: types.builders.identifier.from({ name: '$localize' }),
-          quasi: types.builders.templateLiteral.from({
-            expressions: templateExpressions,
-            quasis: templateQuasis
-          })
-      }))];
+
+      i18nElement.children = [types.builders.jsxExpressionContainer($jsxifyExpression)];
+
+    } else {
+      i18nElement.children = [types.builders.jsxExpressionContainer($localizeExpression)];
+    }
   });
+
+  return elementsContainElement;
+}
+
+function addJsxifyImport(rootNode: types.ASTNode) {
+  const importDeclaration = types.builders.importDeclaration(
+    [types.builders.importSpecifier.from({
+      imported: types.builders.identifier.from({ name: '$jsxify' }),
+      local: types.builders.identifier.from({ name: '$jsxify' })
+    })],
+    types.builders.literal.from({ value: 'jsx$localize/react' })
+  );
+
+  rootNode.unshift(importDeclaration);
 }

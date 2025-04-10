@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "test": "vitest --config jsx\\$localize/vitest.config.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -29,6 +30,12 @@
     "recast": "^0.23.9",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.21.0",
-    "vite": "^6.0.11"
+    "vite": "^6.0.11",
+    "vitest": "^3.1.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "esprima": "npm:nightly-esprima@2021.8.30"
+    }
   }
 }
