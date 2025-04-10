@@ -66,7 +66,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
     const templateQuasis: types.namedTypes.TemplateElement[] = [];
     let previousChildWasAnExpression = false;
-    let childContainsElement = false;
+    let childJSXElements: Array<types.namedTypes.JSXElement> = [];
 
     i18nElement.children?.forEach((child, childIndex) => {
 
@@ -119,9 +119,59 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
         }
 
       } else if (types.namedTypes.JSXElement.check(child)) {
-        childContainsElement = true;
+        const childJSXElementId = childJSXElements.length;
+        childJSXElements.push(child);
 
-        // TODO handle the element
+        if (child.openingElement.selfClosing) {
+          const elementPlaceholder = types.builders.literal.from({
+            value: '\uFFFD#' + childJSXElementId + '/\uFFFD'
+          });
+          templateExpressions.push(elementPlaceholder);
+
+          const tagPlaceholderSuffix = ':TAG_' + child.openingElement.name.name.toUpperCase() + ':';
+          templateQuasis.push(types.builders.templateElement.from({
+            value: {
+              raw: tagPlaceholderSuffix,
+              cooked: tagPlaceholderSuffix
+            },
+            tail: false
+          }));
+        } else {
+
+          const elementStartPlaceholder = types.builders.literal.from({
+            value: '\uFFFD#' + childJSXElementId + '\uFFFD'
+          });
+
+          const elementEndPlaceholder = types.builders.literal.from({
+            value: '\uFFFD/#' + childJSXElementId + '\uFFFD'
+          });
+
+          templateExpressions.push(elementStartPlaceholder);
+
+          const startTagPlaceholderSuffix = ':START_TAG_' + child.openingElement.name.name.toUpperCase() + ':' + child.children![0].value;
+
+          // TODO replace
+          child.children = [];
+
+          templateQuasis.push(types.builders.templateElement.from({
+            value: {
+              raw: startTagPlaceholderSuffix,
+              cooked: startTagPlaceholderSuffix
+            },
+            tail: false
+          }));
+          templateExpressions.push(elementEndPlaceholder);
+
+          const endTagPlaceholderSuffix = ':END_TAG_' + child.openingElement.name.name.toUpperCase() + ':';
+          templateQuasis.push(types.builders.templateElement.from({
+            value: {
+              raw: endTagPlaceholderSuffix,
+              cooked: endTagPlaceholderSuffix,
+            },
+            tail: false
+          }));
+
+        }
       } else {
         throw new Error('Unexpected child type: ' + child.type + child.value);
       }
@@ -135,13 +185,16 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
       })
     });
 
-    if (childContainsElement) {
+    if (childJSXElements.length > 0) {
       elementsContainElement = true;
 
       const $jsxifyExpression = types.builders.callExpression.from({
         callee: types.builders.identifier.from({ name: '$jsxify' }),
         arguments: [
-          $localizeExpression
+          $localizeExpression,
+          types.builders.arrayExpression.from({
+            elements: childJSXElements
+          })
         ]
       });
 

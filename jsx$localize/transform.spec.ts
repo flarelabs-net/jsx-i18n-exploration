@@ -136,14 +136,28 @@ describe('transform', () => {
   });
 
   describe('nested html', () => {
-    it.only('should transform messages with nested html', () => {
+    it('should transform messages with nested html', () => {
+      const {code} = transform(`
+        export const nestedHtml = <div i18n>Hello <hr/></div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_HR:\`, [<hr/>])}</div>;
+        `);
+    });
+
+    it('should transform messages with nested html', () => {
       const {code} = transform(`
         export const nestedHtml = <div i18n>Hello <span>world!</span></div>;
         `, 'test');
 
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${'\uFFFD#0\uFFFD'}:START_TAG_SPAN:world!\${'\uFFFD/#0\uFFFD'}:END_TAG_SPAN:\`, [<span></span>])}</div>;
+        export const nestedHtml = <div>{$jsxify(
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_SPAN:world!\${"\uFFFD/#0\uFFFD"}:END_TAG_SPAN:\`,
+                        [<span></span>]
+                )}</div>;
         `);
     });
 
@@ -158,7 +172,9 @@ describe('transform', () => {
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
-    $localize\`Hello \${'\uFFFD#0\uFFFD'}:START_TAG_B:\${'\uFFFD#1\uFFFD'}:START_TAG_I:my friend \${firstName}:INTERPOLATION:\${'\uFFFD/#1\uFFFD'}:END_TAG_I:\${'\uFFFD/#0\uFFFD'}:END_TAG_B:!\`, [<b></b>, <i></i>,])}</div>;
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_B:\${'\uFFFD#1\uFFFD'}:START_TAG_I:my friend \${firstName}:INTERPOLATION:\${'\uFFFD/#1\uFFFD'}:END_TAG_I:\${'\uFFFD/#0\uFFFD'}:END_TAG_B:!\`, 
+                        [<b></b>, <i></i>,]
+                )}</div>;
         `);
     });
   });
