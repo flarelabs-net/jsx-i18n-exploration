@@ -1,9 +1,11 @@
 import { parse, print, types } from "recast";
+import typescriptParser from "recast/parsers/babel-ts";
 import { TransformResult } from "vite";
 
 export function transform(code: string, moduleId: string): TransformResult {
   const ast = parse(code, {
-    sourceFileName: moduleId
+    sourceFileName: moduleId,
+    parser: typescriptParser
   });
 
   const [i18nElements, i18nAttrs] = findAndCleanupAllI18nElements(ast.program.body);
@@ -66,6 +68,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
     const templateQuasis: types.namedTypes.TemplateElement[] = [];
     let childJSXElements: Array<types.namedTypes.JSXElement> = [];
+    let interpolationCounter = 0;
 
     i18nElement.children?.forEach((i18nMessagePart, i18nMessagePartIndex) => {
 
@@ -87,8 +90,8 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           // add a new quasis, since we have matching pairs of quasis and expressions
           templateQuasis.push(types.builders.templateElement.from({
             value: {
-              raw: translationMessagePrefix + i18nMessagePart.value,
-              cooked: translationMessagePrefix + i18nMessagePart.value
+              raw: translationMessagePrefix + normalizeWhitespace(i18nMessagePart.value),
+              cooked: translationMessagePrefix + normalizeWhitespace(i18nMessagePart.value)
             },
             tail: isLastI18nMessagePart,
             loc: i18nMessagePart.loc
@@ -98,8 +101,8 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           
           // we have more quasis than expressions, so let's append to the last one
           const lastQuasis = templateQuasis.at(-1);
-          lastQuasis!.value.raw += i18nMessagePart.value;
-          lastQuasis!.value.cooked += i18nMessagePart.value;
+          lastQuasis!.value.raw = lastQuasis!.value.raw + normalizeWhitespace(i18nMessagePart.value);
+          lastQuasis!.value.cooked = lastQuasis!.value.cooked + normalizeWhitespace(i18nMessagePart.value);
 
         }
 
@@ -122,11 +125,13 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           return;
         }
 
+        const interpolationId = interpolationCounter++;
+
         templateExpressions.push(i18nMessagePart.expression);
         templateQuasis.push(types.builders.templateElement.from({
           value: {
-            raw: ':INTERPOLATION:',
-            cooked: ':INTERPOLATION:'
+            raw: `:INTERPOLATION_${interpolationId}:`,
+            cooked: `:INTERPOLATION_${interpolationId}:`
           },
           tail: isLastI18nMessagePart
         }));
@@ -136,13 +141,21 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
         const childJSXElementId = childJSXElements.length;
         childJSXElements.push(i18nMessagePart);
 
+        const openingElementNameNode = i18nMessagePart.openingElement.name;
+          
+        if (!types.namedTypes.JSXIdentifier.check(openingElementNameNode)) {
+          throw new Error('Unsupported opening JSX element name type: ' + openingElementNameNode.type);
+        }
+
+        const openingElementName = openingElementNameNode.name;
+
         if (i18nMessagePart.openingElement.selfClosing) {
           const elementPlaceholder = types.builders.literal.from({
             value: '\uFFFD#' + childJSXElementId + '/\uFFFD'
           });
           templateExpressions.push(elementPlaceholder);
 
-          const tagPlaceholderSuffix = ':TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
+          const tagPlaceholderSuffix = `:TAG_${openingElementName}#${childJSXElementId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: tagPlaceholderSuffix,
@@ -158,7 +171,9 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           });
           templateExpressions.push(elementStartPlaceholder);
 
-          const startTagPlaceholderSuffix = ':START_TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
+          
+
+          const startTagPlaceholderSuffix = `:TAG_START_${openingElementName}#${childJSXElementId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: startTagPlaceholderSuffix,
@@ -177,7 +192,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           });
           templateExpressions.push(elementEndPlaceholder);
 
-          const endTagPlaceholderSuffix = ':END_TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
+          const endTagPlaceholderSuffix = `:TAG_END_${openingElementName}#${childJSXElementId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: endTagPlaceholderSuffix,
@@ -188,6 +203,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
 
         }
       } else {
+        // @ts-ignore
         throw new Error('Unexpected child type: ' + i18nMessagePart.type + i18nMessagePart.value);
       }
     }
@@ -233,4 +249,25 @@ function addJsxifyImport(rootNode: Array<types.ASTNode>) {
   );
 
   rootNode.unshift(importDeclaration);
+}
+
+
+
+/*
+  Basic Whitespace Rules in JSX
+  1. Adjacent whitespace characters are collapsed into a single space
+      - Multiple spaces, tabs, and newlines are treated as a single space
+  2. Leading and trailing whitespace in a line is removed
+      - Whitespace at the beginning and end of JSX lines is ignored
+  3. Line breaks between elements are ignored
+      - But line breaks within text are preserved as spaces
+*/
+function normalizeWhitespace(text: string): string {
+  return text
+            // line breaks within text are preserved as spaces
+            .replace(/(?<=\S)(\s*\n\s*)+(?=\S)/g, ' ')
+            // leading and trailing whitespace in a line is removed
+            .replace(/^\n\s*|\s*\n\s*$/g, '')
+            // adjacent whitespace characters are collapsed into a single space 
+            .replace(/\s+/g, ' ');
 }

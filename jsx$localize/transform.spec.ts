@@ -106,7 +106,21 @@ describe('transform', () => {
       expect(code).toBe(`
         const name = 'Jadzia';
 
-        export const interpolatedMessage = <div>{$localize\`Hello \${name}:INTERPOLATION:!\`}</div>;
+        export const interpolatedMessage = <div>{$localize\`Hello \${name}:INTERPOLATION_0:!\`}</div>;
+        `);
+    });
+
+    it('should transform messages with an empty expression', () => {
+      const {code} = transform(`
+        const name = 'Jadzia';
+
+        export const interpolatedMessage = <div i18n>Hello{}!</div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        const name = 'Jadzia';
+
+        export const interpolatedMessage = <div>{$localize\`Hello!\`}</div>;
         `);
     });
 
@@ -130,12 +144,12 @@ describe('transform', () => {
         const no = 'no';
         const spaceInBetween = 'spaceInBetween';
 
-        export const interpolatedMultiMessage =  <div>{$localize\`\${greeting}:INTERPOLATION: \${name}:INTERPOLATION:! How was your \${superlative}:INTERPOLATION: \${event}:INTERPOLATION:? \${no}:INTERPOLATION:\${spaceInBetween}:INTERPOLATION:?\`}</div>
+        export const interpolatedMultiMessage =  <div>{$localize\`\${greeting}:INTERPOLATION_0: \${name}:INTERPOLATION_1:! How was your \${superlative}:INTERPOLATION_2: \${event}:INTERPOLATION_3:? \${no}:INTERPOLATION_4:\${spaceInBetween}:INTERPOLATION_5:?\`}</div>
         `);
     });
   });
 
-  describe('nested html', () => {
+  describe('nested html and components', () => {
     it('should transform messages with nested html', () => {
       const {code} = transform(`
         export const nestedHtml = <div i18n>Hello <hr/></div>;
@@ -143,7 +157,7 @@ describe('transform', () => {
 
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_HR:\`, [<hr/>])}</div>;
+        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_hr#0:\`, [<hr/>])}</div>;
         `);
     });
 
@@ -155,7 +169,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_SPAN:world!\${"\uFFFD/#0\uFFFD"}:END_TAG_SPAN:\`,
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_span#0:world!\${"\uFFFD/#0\uFFFD"}:TAG_END_span#0:\`,
                         [<span></span>]
                 )}</div>;
         `);
@@ -173,9 +187,149 @@ describe('transform', () => {
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_B:\${"\uFFFD#1\uFFFD"}:START_TAG_I:my friend \${firstName}:INTERPOLATION:\${"\uFFFD/#1\uFFFD"}:END_TAG_I:\${"\uFFFD/#0\uFFFD"}:END_TAG_B:!\`,
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_b#0:\${"\uFFFD#1\uFFFD"}:TAG_START_i#1:my friend \${firstName}:INTERPOLATION_0:\${"\uFFFD/#1\uFFFD"}:TAG_END_i#1:\${"\uFFFD/#0\uFFFD"}:TAG_END_b#0:!\`,
                         [<b></b>, <i></i>]
                 )}</div>;
+        `);
+    });
+
+    it('should transform messages with nested self-closing components', () => {
+      const {code} = transform(`
+        export const nestedHtml = <div i18n>Hello <Greeting/></div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
+        `);
+    });
+
+    it('should transform messages with nested components', () => {
+      const {code} = transform(`
+        export const nestedHtml = <div i18n>Hello <Greeting kind="wild">{name}</Greeting></div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        export const nestedHtml = <div>{$jsxify(
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_Greeting#0:\${name}:INTERPOLATION_0:\${"\uFFFD/#0\uFFFD"}:TAG_END_Greeting#0:\`,
+                        [<Greeting kind="wild"></Greeting>]
+                )}</div>;
+        `);
+    });
+  });
+
+  describe('whitespace handling', () => {
+    /*
+      Basic Whitespace Rules in JSX
+      1. Adjacent whitespace characters are collapsed into a single space
+         - Multiple spaces, tabs, and newlines are treated as a single space
+      2. Leading and trailing whitespace in a line is removed
+         - Whitespace at the beginning and end of JSX lines is ignored
+      3. Line breaks between elements are ignored
+         - But line breaks within text are preserved as spaces
+    */
+
+    it('should collapse whitespace within a text to just one space', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>Hello    world!</div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        `);
+    });
+
+    it('should collapse leading and trailing whitespace of a text enclosed by a tag on the same line', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>   Hello world!   </div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\` Hello world! \`}</div>;
+        `);
+    });
+
+    it('should remove leading and trailing whitespace of a text that is on a new line', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>
+                                    Hello world!
+                                  </div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        `);
+    });
+
+    it('should convert a newline within a text to a space', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>
+                                    Hello
+                                    world!
+                                  </div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        `);
+    });
+
+    it('should handle stripping multiple newlines', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>
+
+
+                                    Hello
+
+
+                                    world!
+
+
+                                  </div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        `);
+    });
+
+    it('should replace a text with just whitespace/newlines with an empty string', () => {
+      const {code} = transform(`
+        export const whitespace = <div i18n>  
+   
+   
+                                    
+                                  </div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const whitespace = <div>{$localize\`\`}</div>;
+        `);
+    });
+
+    it('should handle complex template with space and newlines', () => {
+      const {code} = transform(`
+        export const complexWhitespace = <div i18n>
+                                          Hello     <Greeting kind="wild">
+                                          
+                                            <b>
+                                              
+                                              <i>
+                                              {name}
+                                              </i>   !!!!!
+
+
+                                            </b>
+                                          </Greeting></div>;
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        export const complexWhitespace = <div>{$jsxify(
+            $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${name}:INTERPOLATION_0:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
+            [<Greeting kind="wild"></Greeting>, <b></b>, <i></i>]
+          )}</div>;
         `);
     });
   });

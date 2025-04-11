@@ -7,17 +7,15 @@ export default function jsx$localize() {
     name: 'jsx$localize',
     enforce: 'pre',
     transform(code, id) {
-      if (!id.match(/src\/scenarios\/.+\.tsx/)) return;
-
       if (!id.endsWith('.tsx')) {
         return;
       }
-      console.log('\n\ntransforming', id);
+      console.info('jsx$localize transforming:', id);
 
       const transformed = transform(code, id);
 
-      console.log('\n=== original ===\n', code)
-      console.log('\n=== transformed ===\n', transformed.code)
+      //console.debug('\n=== original ===\n', code)
+      //console.debug('\n=== transformed ===\n', transformed.code)
 
       return transformed;
     }

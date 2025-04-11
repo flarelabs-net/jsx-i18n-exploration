@@ -12,7 +12,7 @@ import { interpolatedMultiMessage } from './scenarios/interpolatedMultiMessage';
 import { multipleMessages } from './scenarios/multipleMessages.tsx';
 
 import {$localizeJsx} from '../jsx$localize/localize';
-import { $jsxify } from '../jsx$localize/jsxify';
+//import { $jsxify } from '../jsx$localize/jsxify';
 import { useState } from 'react';
 import {jsx} from 'react/jsx-runtime';
 
@@ -142,20 +142,51 @@ function App() {
       </div>
  */}
 
- {/* <Trans id="welcome.friendly-greeting" vars={{name, time: timeoftheday}}/> */}
- {/* <div>{$localize`Hello there {name}, how is you {timeoftheday}`}</div> */}
- {/* <div i18n>Hello there <b>{name}</b>, how is you {timeoftheday}</div> */}
- {/* <div>Halo {name}, .. {timeoftheday}</div> */}
+
+
+
+<h1>Hello there!{}!</h1>
+
+{/*
+  <Trans id="welcome.friendly-greeting" />
+
+ <h1>Hello <User name={name}/>, <b>good</b> {timeoftheday}</h1>
+ <h1><Trans id="welcome.friendly-greeting" vars={{name, time: timeoftheday}} Components={[User]} componentProps={[{name: name}]}></User>/]}/></h1>
  
+ <div>{$localize`Hello there ${name}, how is you ${timeoftheday}`}</div>
+ <div i18n>Hello there <b>{name}</b>, how is you {timeoftheday}</div>
+ div>Halo {name}, .. {timeoftheday}</div>
+ 
+ */}
  
  
 
+
+
+
+
+
+
+{/* 
 
 <div i18n>
-  Hello <b><i>my friend {firstName}</i></b>!`,
+  Hi <User id={name}/>!
+</div> */}
+
+
+<div> 
+  xHello
+  bar
+  
+  </div>
+<div>
+  xHello   <b> <i>  my friend {firstName}</i></b>!
+</div>
+<div i18n>
+  Hello <b><i>my friend {firstName}</i></b>!
 </div>
 
-<div>{ 
+{/* <div>{ 
   $jsxify(
     $localize`Hello ${'\uFFFD#0\uFFFD'}:START_TAG_B:${'\uFFFD#1\uFFFD'}:START_TAG_I:my friend ${firstName}:INTERPOLATION:${'\uFFFD/#1\uFFFD'}:END_TAG_I:${'\uFFFD/#0\uFFFD'}:END_TAG_B:!`,
     [
@@ -163,10 +194,10 @@ function App() {
       <i></i>,
     ]
   )
-}</div>
+}</div> */}
 
 
-<div>{ 
+{/* <div>{ 
   $jsxify(
     $localize`Hello ${'\uFFFD#0\uFFFD'}:START_TAG_B:${'\uFFFD#1\uFFFD'}:START_TAG_I:my friend ${'\uFFFD#2\uFFFD'}:START_TAG_U:${firstName}:INTERPOLATION:${'\uFFFD/#2\uFFFD'}:END_TAG_U:${'\uFFFD/#1\uFFFD'}:END_TAG_I:${'\uFFFD/#0\uFFFD'}:END_TAG_B:!`,
     [
@@ -175,17 +206,17 @@ function App() {
       <u></u>,
     ]
   )
-}</div>
+}</div> */}
 
 <div i18n>
-  initial text
+  *prefix*
   <u>
     <Greeting name="lalala">extra</Greeting>
   </u>
-  suffix text
+  *suffix*
 </div>
 
-<div>{ 
+{/* <div>{ 
   $jsxify(
     $localize`initial text ${'\uFFFD#0\uFFFD'}:START_TAG_U:${'\uFFFD#1\uFFFD'}:START_COMPONENT_GREETING:extra${'\uFFFD/#1\uFFFD'}:END_COMPONENT_GREETING:${'\uFFFD/#0\uFFFD'}:END_TAG_U: suffix text`,
     [
@@ -193,18 +224,18 @@ function App() {
       <Greeting name="lalala"></Greeting>
     ]
   )
-}</div>
+}</div> */}
 
 
 <div i18n>
-  before|
+  *prefix*
   <u>
     <Greeting name="self-closing"/>
   </u>
-  |after
+  *suffix*
 </div>
 
-<div>{ 
+{/* <div>{ 
   $jsxify(
     $localize`before|${'\uFFFD#0\uFFFD'}:START_TAG_U:${'\uFFFD#1/\uFFFD'}:COMPONENT_GREETING:${'\uFFFD/#0\uFFFD'}:END_TAG_U:|after`,
     [
@@ -212,18 +243,18 @@ function App() {
       <Greeting name="self-closing"></Greeting>
     ]
   )
-}</div>
+}</div> */}
 
 <div i18n>
-  before|
+  *prefix*
   <u>
     first: <Greeting name="swapped"/>
     second: <Greeting name="double"/>
   </u>
-  |after
+  *suffix*
 </div>
 
-<div>{ 
+{/* <div>{ 
   $jsxify(
     $localize`initial text ${'\uFFFD#0\uFFFD'}:START_TAG_U:first:${'\uFFFD#2/\uFFFD'}:COMPONENT_GREETING_1:second: ${'\uFFFD#1/\uFFFD'}:COMPONENT_GREETING:${'\uFFFD/#0\uFFFD'}:END_TAG_U: suffix text`,
     [
@@ -232,7 +263,7 @@ function App() {
       <Greeting name="swapped"/>
     ]
   )
-}</div>
+}</div> */}
 
 
     </>

@@ -8,8 +8,12 @@ export default defineConfig({
     jsx$localize(),
     react()
   ],
+  resolve: {
+    alias: {
+      'jsx$localize/react': import.meta.resolve('../../jsx$localize/react/index.ts'),
+    }
+  },
   build: {
     minify: false
   }
-})
-
+});
