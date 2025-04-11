@@ -106,7 +106,7 @@ describe('transform', () => {
       expect(code).toBe(`
         const name = 'Jadzia';
 
-        export const interpolatedMessage = <div>{$localize\`Hello \${name}!\`}</div>;
+        export const interpolatedMessage = <div>{$localize\`Hello \${name}:INTERPOLATION:!\`}</div>;
         `);
     });
 
@@ -130,7 +130,7 @@ describe('transform', () => {
         const no = 'no';
         const spaceInBetween = 'spaceInBetween';
 
-        export const interpolatedMultiMessage =  <div>{$localize\`\${greeting} \${name}! How was your \${superlative} \${event}? \${no}\${spaceInBetween}?\`}</div>
+        export const interpolatedMultiMessage =  <div>{$localize\`\${greeting}:INTERPOLATION: \${name}:INTERPOLATION:! How was your \${superlative}:INTERPOLATION: \${event}:INTERPOLATION:? \${no}:INTERPOLATION:\${spaceInBetween}:INTERPOLATION:?\`}</div>
         `);
     });
   });
@@ -169,11 +169,12 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_B:\${'\uFFFD#1\uFFFD'}:START_TAG_I:my friend \${firstName}:INTERPOLATION:\${'\uFFFD/#1\uFFFD'}:END_TAG_I:\${'\uFFFD/#0\uFFFD'}:END_TAG_B:!\`, 
-                        [<b></b>, <i></i>,]
+                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:START_TAG_B:\${"\uFFFD#1\uFFFD"}:START_TAG_I:my friend \${firstName}:INTERPOLATION:\${"\uFFFD/#1\uFFFD"}:END_TAG_I:\${"\uFFFD/#0\uFFFD"}:END_TAG_B:!\`,
+                        [<b></b>, <i></i>]
                 )}</div>;
         `);
     });

@@ -65,29 +65,47 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
 
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
     const templateQuasis: types.namedTypes.TemplateElement[] = [];
-    let previousChildWasAnExpression = false;
     let childJSXElements: Array<types.namedTypes.JSXElement> = [];
 
-    i18nElement.children?.forEach((child, childIndex) => {
+    i18nElement.children?.forEach((i18nMessagePart, i18nMessagePartIndex) => {
 
+      const isFirstI18nMessagePart = i18nMessagePartIndex === 0;
+      const isLastI18nMessagePart = i18nMessagePartIndex === i18nElement.children!.length - 1;
       // The first child needs to be prefixed with description, meaning, and/or id (if defined)
-      const translationMessagePrefix = (childIndex === 0 && i18nAttrValue) ? `:${i18nAttrValue.value}:` : '';
+      const translationMessagePrefix = (isFirstI18nMessagePart && i18nAttrValue) ? `:${i18nAttrValue.value}:` : '';
 
-      if (types.namedTypes.JSXText.check(child)) {
+      processI18nMessagePart(i18nMessagePart as any, isFirstI18nMessagePart, isLastI18nMessagePart, translationMessagePrefix);
+      
+    });
 
-        templateQuasis.push(types.builders.templateElement.from({
-          value: {
-            raw: translationMessagePrefix + child.value,
-            cooked: translationMessagePrefix + child.value
-          },
-          tail: childIndex === i18nElement.children!.length - 1,
-          loc: child.loc
-        }));
-        previousChildWasAnExpression = false;
+    function processI18nMessagePart(i18nMessagePart: types.namedTypes.JSXText | types.namedTypes.JSXElement | types.namedTypes.JSXExpressionContainer, isFirstI18nMessagePart: boolean, isLastI18nMessagePart:boolean, translationMessagePrefix: string) {
+      
+      if (types.namedTypes.JSXText.check(i18nMessagePart)) {
 
-      } else if (types.namedTypes.JSXExpressionContainer.check(child)) {
+        if (templateQuasis.length === templateExpressions.length) {
+
+          // add a new quasis, since we have matching pairs of quasis and expressions
+          templateQuasis.push(types.builders.templateElement.from({
+            value: {
+              raw: translationMessagePrefix + i18nMessagePart.value,
+              cooked: translationMessagePrefix + i18nMessagePart.value
+            },
+            tail: isLastI18nMessagePart,
+            loc: i18nMessagePart.loc
+          }));
+
+        } else {
           
-        if (childIndex === 0) {
+          // we have more quasis than expressions, so let's append to the last one
+          const lastQuasis = templateQuasis.at(-1);
+          lastQuasis!.value.raw += i18nMessagePart.value;
+          lastQuasis!.value.cooked += i18nMessagePart.value;
+
+        }
+
+      } else if (types.namedTypes.JSXExpressionContainer.check(i18nMessagePart)) {
+          
+        if (isFirstI18nMessagePart) {
           // add an empty template element to the quasis since original element starts with an interpolation
           // but tagged templates always start with a string, even if it's an empty string
           templateQuasis.push(types.builders.templateElement.from({
@@ -99,60 +117,48 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
           }));
         }
 
-        if (types.namedTypes.JSXEmptyExpression.check(child.expression)) {
+        if (types.namedTypes.JSXEmptyExpression.check(i18nMessagePart.expression)) {
           // if it's an empty expression, we don't need to do anything
-        } else {
-
-          if (previousChildWasAnExpression) {
-            // insert an empty template element to separate the expressions
-            templateQuasis.push(types.builders.templateElement.from({
-              value: {
-                raw: '',
-                cooked: ''
-              },
-              tail: false
-            }));
-          }
-
-          templateExpressions.push(child.expression);
-          previousChildWasAnExpression = true;
+          return;
         }
 
-      } else if (types.namedTypes.JSXElement.check(child)) {
-        const childJSXElementId = childJSXElements.length;
-        childJSXElements.push(child);
+        templateExpressions.push(i18nMessagePart.expression);
+        templateQuasis.push(types.builders.templateElement.from({
+          value: {
+            raw: ':INTERPOLATION:',
+            cooked: ':INTERPOLATION:'
+          },
+          tail: isLastI18nMessagePart
+        }));
 
-        if (child.openingElement.selfClosing) {
+      } else if (types.namedTypes.JSXElement.check(i18nMessagePart)) {
+
+        const childJSXElementId = childJSXElements.length;
+        childJSXElements.push(i18nMessagePart);
+
+        if (i18nMessagePart.openingElement.selfClosing) {
           const elementPlaceholder = types.builders.literal.from({
             value: '\uFFFD#' + childJSXElementId + '/\uFFFD'
           });
           templateExpressions.push(elementPlaceholder);
 
-          const tagPlaceholderSuffix = ':TAG_' + child.openingElement.name.name.toUpperCase() + ':';
+          const tagPlaceholderSuffix = ':TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: tagPlaceholderSuffix,
               cooked: tagPlaceholderSuffix
             },
-            tail: false
+            tail: isLastI18nMessagePart
           }));
+
         } else {
 
           const elementStartPlaceholder = types.builders.literal.from({
             value: '\uFFFD#' + childJSXElementId + '\uFFFD'
           });
-
-          const elementEndPlaceholder = types.builders.literal.from({
-            value: '\uFFFD/#' + childJSXElementId + '\uFFFD'
-          });
-
           templateExpressions.push(elementStartPlaceholder);
 
-          const startTagPlaceholderSuffix = ':START_TAG_' + child.openingElement.name.name.toUpperCase() + ':' + child.children![0].value;
-
-          // TODO replace
-          child.children = [];
-
+          const startTagPlaceholderSuffix = ':START_TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: startTagPlaceholderSuffix,
@@ -160,22 +166,31 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
             },
             tail: false
           }));
+
+          i18nMessagePart.children?.forEach((child) => {
+            processI18nMessagePart(child as any, false, false, '');
+          });
+          i18nMessagePart.children = [];
+
+          const elementEndPlaceholder = types.builders.literal.from({
+            value: '\uFFFD/#' + childJSXElementId + '\uFFFD'
+          });
           templateExpressions.push(elementEndPlaceholder);
 
-          const endTagPlaceholderSuffix = ':END_TAG_' + child.openingElement.name.name.toUpperCase() + ':';
+          const endTagPlaceholderSuffix = ':END_TAG_' + i18nMessagePart.openingElement.name.name.toUpperCase() + ':';
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: endTagPlaceholderSuffix,
               cooked: endTagPlaceholderSuffix,
             },
-            tail: false
+            tail: isLastI18nMessagePart
           }));
 
         }
       } else {
-        throw new Error('Unexpected child type: ' + child.type + child.value);
+        throw new Error('Unexpected child type: ' + i18nMessagePart.type + i18nMessagePart.value);
       }
-    });
+    }
 
     const $localizeExpression = types.builders.taggedTemplateExpression.from({
       tag: types.builders.identifier.from({ name: '$localize' }),
@@ -208,7 +223,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
   return elementsContainElement;
 }
 
-function addJsxifyImport(rootNode: types.ASTNode) {
+function addJsxifyImport(rootNode: Array<types.ASTNode>) {
   const importDeclaration = types.builders.importDeclaration(
     [types.builders.importSpecifier.from({
       imported: types.builders.identifier.from({ name: '$jsxify' }),
