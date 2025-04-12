@@ -5,50 +5,75 @@
       <trans-unit id="3022994926184248873" datatype="html">
         <source>Hello world!</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12043</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12047</context>
         </context-group>
       </trans-unit>
       <trans-unit id="5817355858936463520" datatype="html">
         <source>Hello <x id="INTERPOLATION_0" equiv-text="firstName"/>!</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12044</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12048</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12069</context>
         </context-group>
       </trans-unit>
       <trans-unit id="870231341293765269" datatype="html">
         <source>Click to increment: <x id="TAG_START_button#0" ctype="x-start_button#0" equiv-text="&quot;�#0�&quot;"/>count=<x id="INTERPOLATION_0" equiv-text="count"/><x id="TAG_END_button#0" ctype="x-end_button#0" equiv-text="&quot;�/#0�&quot;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12046</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12050</context>
         </context-group>
       </trans-unit>
       <trans-unit id="8155799127656094172" datatype="html">
         <source>Hello <x id="TAG_START_b#0" ctype="x-start_b#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_START_i#1" ctype="x-start_i#1" equiv-text="&quot;�#1�&quot;"/>my friend <x id="INTERPOLATION_0" equiv-text="firstName"/><x id="TAG_END_i#1" ctype="x-end_i#1" equiv-text="&quot;�/#1�&quot;"/><x id="TAG_END_b#0" ctype="x-end_b#0" equiv-text="&quot;�/#0�&quot;"/>!</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12050</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12054</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2440984797904254266" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_START_Greeting#1" ctype="x-start_greeting#1" equiv-text="&quot;�#1�&quot;"/>extra<x id="TAG_END_Greeting#1" ctype="x-end_greeting#1" equiv-text="&quot;�/#1�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12054</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12058</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7680262756773208259" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_Greeting#1" ctype="x-greeting#1" equiv-text="&quot;�#1/�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12058</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12062</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3425301371500802564" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/>first: <x id="TAG_Greeting#1" ctype="x-greeting#1" equiv-text="&quot;�#1/�&quot;"/>second: <x id="TAG_Greeting#2" ctype="x-greeting#2" equiv-text="&quot;�#2/�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-Djqx9WOD.js</context>
-          <context context-type="linenumber">12062</context>
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12066</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="6710912324755316213" datatype="html">
+        <source>Hello <x id="INTERPOLATION_0" equiv-text="loggedIn ? /* @__PURE__ */ jsxRuntimeExports.jsx(&quot;span&quot;, { children: $localize`friend` }) : /* @__PURE__ */ jsxRuntimeExports.jsx(&quot;span&quot;, { children: $localize`stranger` })"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12070</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="851356095055752738" datatype="html">
+        <source>friend</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12070</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1731727367063270301" datatype="html">
+        <source>stranger</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">dist/assets/index-Bg1nwa4B.js</context>
+          <context context-type="linenumber">12070</context>
         </context-group>
       </trans-unit>
     </body>

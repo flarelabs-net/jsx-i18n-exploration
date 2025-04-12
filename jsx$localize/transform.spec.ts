@@ -221,6 +221,60 @@ describe('transform', () => {
     });
   });
 
+
+  describe('nested JSX', () => {
+
+    it('should transform messages with nested JSX', () => {
+      const {code} = transform(`
+          const loggedIn = true;
+          const UserProfile = function () {
+            return 'userprofile';
+          };
+          
+          const nestedJSX = (
+            <div i18n>Hello {loggedIn ? <UserProfile /> : 'world'}!</div>
+          );
+        `, 'test');
+
+      expect(code).toBe(`
+          const loggedIn = true;
+          const UserProfile = function () {
+            return 'userprofile';
+          };
+          
+          const nestedJSX = (
+            <div>{$localize\`Hello \${loggedIn ? <UserProfile /> : 'world'}:INTERPOLATION_0:!\`}</div>
+          );
+        `);
+    });
+
+  });
+
+  describe('nested i18n', () => {
+
+    it('should transform messages with nested i18n', () => {
+      const {code} = transform(`
+          const loggedIn = true;
+          
+          const nestedJSX = (
+            <div i18n>
+              Hello {loggedIn ? <span i18n>friend</span> : <span i18n>stranger</span>}
+            </div>
+          );
+        `, 'test');
+
+      expect(code).toBe(`
+          const loggedIn = true;
+          
+          const nestedJSX = (
+            <div>{$localize\`Hello \${loggedIn ? <span>{$localize\`friend\`}</span> : <span>{$localize\`stranger\`}</span>}:INTERPOLATION_0:\`}</div>
+          );
+        `);
+    });
+
+  });
+
+
   describe('whitespace handling', () => {
     /*
       Basic Whitespace Rules in JSX

@@ -7,6 +7,9 @@
     "8155799127656094172": "Hello {$TAG_START_b#0}{$TAG_START_i#1}my friend {$INTERPOLATION_0}{$TAG_END_i#1}{$TAG_END_b#0}!",
     "2440984797904254266": "*prefix*{$TAG_START_u#0}{$TAG_START_Greeting#1}extra{$TAG_END_Greeting#1}{$TAG_END_u#0}*suffix*",
     "7680262756773208259": "*prefix*{$TAG_START_u#0}{$TAG_Greeting#1}{$TAG_END_u#0}*suffix*",
-    "3425301371500802564": "*prefix*{$TAG_START_u#0}first: {$TAG_Greeting#1}second: {$TAG_Greeting#2}{$TAG_END_u#0}*suffix*"
+    "3425301371500802564": "*prefix*{$TAG_START_u#0}first: {$TAG_Greeting#1}second: {$TAG_Greeting#2}{$TAG_END_u#0}*suffix*",
+    "6710912324755316213": "Hello {$INTERPOLATION_0}",
+    "851356095055752738": "friend",
+    "1731727367063270301": "stranger"
   }
 }
