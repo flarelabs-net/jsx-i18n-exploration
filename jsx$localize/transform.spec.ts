@@ -195,11 +195,13 @@ describe('transform', () => {
 
     it('should transform messages with nested self-closing components', () => {
       const {code} = transform(`
+        const Greeting = () => <span>Hello!</span>;
         export const nestedHtml = <div i18n>Hello <Greeting/></div>;
         `, 'test');
 
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
+        const Greeting = () => <span>Hello!</span>;
         export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
         `);
     });

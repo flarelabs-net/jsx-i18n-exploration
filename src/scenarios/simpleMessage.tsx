@@ -1,1 +1,0 @@
-export const simpleMessage = <div i18n>Hello world!</div>;

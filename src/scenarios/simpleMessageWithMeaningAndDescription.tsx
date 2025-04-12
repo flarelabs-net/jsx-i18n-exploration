@@ -1,1 +1,0 @@
-export const simpleMessageWithMeaningAndDescription = <div i18n="login screen|a friendly greeting">Hello world!</div>;
