@@ -10,10 +10,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "extract-messages:json": "localize-extract --source dist/**/*.js --format json --outputPath messages.json",
-    "translate-messages:json": "localize-translate --root dist/ --source '**' --source-locale en  --translations ./messages-sk.json --outputPath dist-localized/{{LOCALE}}/",
+    "translate:json": "localize-translate --root dist/ --source '**' --source-locale en  --translations ./messages-sk.json --missingTranslation error --outputPath dist-localized/{{LOCALE}}/",
     "preview:en": "vite preview --port 3000 --outDir ./dist-localized/en/",
-    "preview:sk": "vite preview --port 3000 --outDir ./dist-localized/sk/",
-    "extract-messages:xlif": "localize-extract --source dist/**/*.js --format xlif --outputPath messages.xlf"
+    "preview:sk": "vite preview --port 3001 --outDir ./dist-localized/sk/",
+    "extract-messages:xlif": "localize-extract --source dist/**/*.js --format xlif --outputPath messages.xlf",
+    "build-and-preview": "pnpm build && pnpm extract-messages:json && pnpm extract-messages:xlif && pnpm translate:json && pnpm run preview:sk"
   },
   "dependencies": {
     "react": "^19.0.0",

@@ -91,6 +91,18 @@ function App() {
       */}
 
       <div i18n>
+        Hello world!
+      </div>
+
+      <div i18n>
+        Hello {firstName}!
+      </div>
+
+      <div i18n>
+        Click to increment: <button onClick={increment}>count={count}</button>
+      </div>
+
+      <div i18n>
         Hello <b><i>my friend {firstName}</i></b>!
       </div>
 

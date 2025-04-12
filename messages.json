@@ -1,6 +1,9 @@
 {
   "locale": "en",
   "translations": {
+    "3022994926184248873": "Hello world!",
+    "5817355858936463520": "Hello {$INTERPOLATION_0}!",
+    "870231341293765269": "Click to increment: {$TAG_START_button#0}count={$INTERPOLATION_0}{$TAG_END_button#0}",
     "8155799127656094172": "Hello {$TAG_START_b#0}{$TAG_START_i#1}my friend {$INTERPOLATION_0}{$TAG_END_i#1}{$TAG_END_b#0}!",
     "2440984797904254266": "*prefix*{$TAG_START_u#0}{$TAG_START_Greeting#1}extra{$TAG_END_Greeting#1}{$TAG_END_u#0}*suffix*",
     "7680262756773208259": "*prefix*{$TAG_START_u#0}{$TAG_Greeting#1}{$TAG_END_u#0}*suffix*",
