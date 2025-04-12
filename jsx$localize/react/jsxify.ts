@@ -12,6 +12,7 @@ export function $jsxify(message:string, elements: ReactElement[]) {
   let rootNode: JsxifyNode = {parent: null, children: [], element: jsx(Fragment, {})};
   let nodeCursor = rootNode;
   let consumedMessageIndex = 0;
+  const usedElements = new Set<ReactElement>();
 
   for (const match of message.matchAll(/\uFFFD(?<closing>\/)?#(?<elementIndex>\d+)(?<selfClosing>\/)?\uFFFD/g)) {
   
@@ -21,11 +22,22 @@ export function $jsxify(message:string, elements: ReactElement[]) {
     }
     consumedMessageIndex = match.index! + match[0].length;
 
-    const {closing, elementIndex, selfClosing} = match.groups!;
+    const {closing, elementIndex: elementIndexString, selfClosing} = match.groups!;
     const opening = !closing;
-    const element = elements[Number(elementIndex)];
+    
+    const elementIndex = Number(elementIndexString);
+    if (elementIndex >= elements.length) {
+      throw new Error(`Invalid translation: Element index ${elementIndex} out of bounds for elements array of length ${elements.length}.\nTranslation: ${message}`);
+    }
+
+    const element = elements[elementIndex];
 
     if (opening || selfClosing) {
+      if (usedElements.has(element)) {
+        throw new Error(`Invalid translation: Element #${elementIndex} (${JSON.stringify(element)}) has already been used.\nTranslation: ${message}`);
+      }
+      usedElements.add(element);
+
       const newNode = {parent: nodeCursor, element, children: []}
       nodeCursor.children.push(newNode);
       if (!selfClosing) {
@@ -33,7 +45,7 @@ export function $jsxify(message:string, elements: ReactElement[]) {
       }
     } else {
       if (nodeCursor.parent === null || element !== nodeCursor.element) {
-        throw new Error('Unbalanced closing tag')
+        throw new Error(`Invalid translation: Element #${elementIndex} (${JSON.stringify(element)}) is being closed before opening.\nTranslation: ${message}`);
       };
 
       nodeCursor = nodeCursor.parent
@@ -52,11 +64,3 @@ function nodeToJsx(node: JsxifyNode): ReactElement {
   const children = node.children.map(child => typeof child === 'string' ? child : nodeToJsx(child));
   return cloneElement(node.element, {}, ...children);
 }
-
-
-// function that takes a string regexp delimiter and returns an array of all parts including all matched delimiters
-// function splitByDelimiters(str: string, delimiter: RegExp) {
-//   const parts = str.split(delimiter);
-//   const delimiters = str.match(delimiter);
-//   return parts.map((part, i) => i < parts.length - 1 ? [part, delimiters![i]] : [part]);
-// }

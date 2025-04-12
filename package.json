@@ -10,6 +10,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "extract-messages:json": "localize-extract --source dist/**/*.js --format json --outputPath messages.json",
+    "translate-messages:json": "localize-translate --root dist/ --source '**' --source-locale en  --translations ./messages-sk.json --outputPath dist-localized/{{LOCALE}}/",
+    "preview:en": "vite preview --port 3000 --outDir ./dist-localized/en/",
+    "preview:sk": "vite preview --port 3000 --outDir ./dist-localized/sk/",
     "extract-messages:xlif": "localize-extract --source dist/**/*.js --format xlif --outputPath messages.xlf"
   },
   "dependencies": {
