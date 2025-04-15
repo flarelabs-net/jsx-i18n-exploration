@@ -147,6 +147,28 @@ describe('transform', () => {
         export const interpolatedMultiMessage =  <div>{$localize\`\${greeting}:INTERPOLATION_0: \${name}:INTERPOLATION_1:! How was your \${superlative}:INTERPOLATION_2: \${event}:INTERPOLATION_3:? \${no}:INTERPOLATION_4:\${spaceInBetween}:INTERPOLATION_5:?\`}</div>
         `);
     });
+
+    it('should transform messages with interpolation that returns a JSX component', () => {
+      const {code} = transform(`
+        const Greeting = () => <span>Hello</span>;
+        const name = <span>Jadzia</span>;
+        const greetingEmoji = '👋';
+        
+        export const interpolatedComponentMessage =  <div i18n>{ <Greeting/> } {name}! { greetingEmoji }</div>
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        const Greeting = () => <span>Hello</span>;
+        const name = <span>Jadzia</span>;
+        const greetingEmoji = '👋';
+
+        export const interpolatedComponentMessage =  <div>{$jsxify(
+                        $localize\`\${"\uFFFD#0/\uFFFD"}:INTERPOLATION#0: \${"\uFFFD#1/\uFFFD"}:INTERPOLATION#1:! \${"\uFFFD#2/\uFFFD"}:INTERPOLATION#2:\`,
+                        [<Greeting/>, name, greetingEmoji]
+                )}</div>
+        `);
+    });
   });
 
   describe('nested html and components', () => {

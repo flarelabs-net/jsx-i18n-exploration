@@ -67,31 +67,39 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
 
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
     const templateQuasis: types.namedTypes.TemplateElement[] = [];
-    let childJSXElements: Array<types.namedTypes.JSXElement> = [];
-    let interpolationCounter = 0;
+    let placeholderExpressions: Array<types.namedTypes.JSXElement | Exclude<types.namedTypes.JSXExpressionContainer['expression'], types.namedTypes.JSXEmptyExpression>> = [];
+
+    // The message needs to be prefixed with description, meaning, and/or id (if defined)
+    const translationMessagePrefix = i18nAttrValue ? `:${i18nAttrValue.value}:` : '';
+
+    // Initialize templateQuasis with the message the description prefix
+    templateQuasis.push(types.builders.templateElement.from({
+      value: {
+        raw: translationMessagePrefix,
+        cooked: translationMessagePrefix
+      },
+      tail: false
+    }));
 
     i18nElement.children?.forEach((i18nMessagePart, i18nMessagePartIndex) => {
 
-      const isFirstI18nMessagePart = i18nMessagePartIndex === 0;
       const isLastI18nMessagePart = i18nMessagePartIndex === i18nElement.children!.length - 1;
-      // The first child needs to be prefixed with description, meaning, and/or id (if defined)
-      const translationMessagePrefix = (isFirstI18nMessagePart && i18nAttrValue) ? `:${i18nAttrValue.value}:` : '';
 
-      processI18nMessagePart(i18nMessagePart as any, isFirstI18nMessagePart, isLastI18nMessagePart, translationMessagePrefix);
+      processI18nMessagePart(i18nMessagePart as any, isLastI18nMessagePart);
       
     });
 
-    function processI18nMessagePart(i18nMessagePart: types.namedTypes.JSXText | types.namedTypes.JSXElement | types.namedTypes.JSXExpressionContainer, isFirstI18nMessagePart: boolean, isLastI18nMessagePart:boolean, translationMessagePrefix: string) {
+    function processI18nMessagePart(i18nMessagePart: types.namedTypes.JSXText | types.namedTypes.JSXElement | types.namedTypes.JSXExpressionContainer, isLastI18nMessagePart:boolean) {
       
       if (types.namedTypes.JSXText.check(i18nMessagePart)) {
 
         if (templateQuasis.length === templateExpressions.length) {
 
-          // add a new quasis, since we have matching pairs of quasis and expressions
+          // we have matching pairs of quasis and expressions, meaning that an expression was added last, so let's add the new text as a new quasis to keep the alternating order
           templateQuasis.push(types.builders.templateElement.from({
             value: {
-              raw: translationMessagePrefix + normalizeWhitespace(i18nMessagePart.value),
-              cooked: translationMessagePrefix + normalizeWhitespace(i18nMessagePart.value)
+              raw: normalizeWhitespace(i18nMessagePart.value),
+              cooked: normalizeWhitespace(i18nMessagePart.value)
             },
             tail: isLastI18nMessagePart,
             loc: i18nMessagePart.loc
@@ -99,7 +107,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
 
         } else {
           
-          // we have more quasis than expressions, so let's append to the last one
+          // we have more quasis than expressions, so let's append to the last one, to keep on alternating the two
           const lastQuasis = templateQuasis.at(-1);
           lastQuasis!.value.raw = lastQuasis!.value.raw + normalizeWhitespace(i18nMessagePart.value);
           lastQuasis!.value.cooked = lastQuasis!.value.cooked + normalizeWhitespace(i18nMessagePart.value);
@@ -107,39 +115,33 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
         }
 
       } else if (types.namedTypes.JSXExpressionContainer.check(i18nMessagePart)) {
-          
-        if (isFirstI18nMessagePart) {
-          // add an empty template element to the quasis since original element starts with an interpolation
-          // but tagged templates always start with a string, even if it's an empty string
-          templateQuasis.push(types.builders.templateElement.from({
-            value: {
-              raw: translationMessagePrefix,
-              cooked: translationMessagePrefix
-            },
-            tail: false
-          }));
-        }
-
+        
         if (types.namedTypes.JSXEmptyExpression.check(i18nMessagePart.expression)) {
           // if it's an empty expression, we don't need to do anything
           return;
         }
 
-        const interpolationId = interpolationCounter++;
+        const placeholderId = placeholderExpressions.length;
+        
+        templateExpressions.push(types.builders.literal.from({
+          value: '\uFFFD#' + placeholderId + '/\uFFFD'
+        }));
 
-        templateExpressions.push(i18nMessagePart.expression);
+        const interpolationPlaceholderSuffix = `:INTERPOLATION#${placeholderId}:`;
         templateQuasis.push(types.builders.templateElement.from({
           value: {
-            raw: `:INTERPOLATION_${interpolationId}:`,
-            cooked: `:INTERPOLATION_${interpolationId}:`
+            raw: interpolationPlaceholderSuffix,
+            cooked: interpolationPlaceholderSuffix
           },
           tail: isLastI18nMessagePart
         }));
+        
+        placeholderExpressions.push(i18nMessagePart.expression);
 
       } else if (types.namedTypes.JSXElement.check(i18nMessagePart)) {
 
-        const childJSXElementId = childJSXElements.length;
-        childJSXElements.push(i18nMessagePart);
+        const placeholderId = placeholderExpressions.length;
+        placeholderExpressions.push(i18nMessagePart);
 
         const openingElementNameNode = i18nMessagePart.openingElement.name;
           
@@ -150,12 +152,14 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
         const openingElementName = openingElementNameNode.name;
 
         if (i18nMessagePart.openingElement.selfClosing) {
-          const elementPlaceholder = types.builders.literal.from({
-            value: '\uFFFD#' + childJSXElementId + '/\uFFFD'
-          });
-          templateExpressions.push(elementPlaceholder);
+          
+          // self-closing placeholder
+          templateExpressions.push(types.builders.literal.from({
+            value: '\uFFFD#' + placeholderId + '/\uFFFD'
+          }));
 
-          const tagPlaceholderSuffix = `:TAG_${openingElementName}#${childJSXElementId}:`;
+          // self-closing comment
+          const tagPlaceholderSuffix = `:TAG_${openingElementName}#${placeholderId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: tagPlaceholderSuffix,
@@ -166,14 +170,13 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
 
         } else {
 
-          const elementStartPlaceholder = types.builders.literal.from({
-            value: '\uFFFD#' + childJSXElementId + '\uFFFD'
-          });
-          templateExpressions.push(elementStartPlaceholder);
+          // start placeholder
+          templateExpressions.push(types.builders.literal.from({
+            value: '\uFFFD#' + placeholderId + '\uFFFD'
+          }));
 
-          
-
-          const startTagPlaceholderSuffix = `:TAG_START_${openingElementName}#${childJSXElementId}:`;
+          // start comment
+          const startTagPlaceholderSuffix = `:TAG_START_${openingElementName}#${placeholderId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: startTagPlaceholderSuffix,
@@ -182,17 +185,19 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
             tail: false
           }));
 
+          // recurse
           i18nMessagePart.children?.forEach((child) => {
-            processI18nMessagePart(child as any, false, false, '');
+            processI18nMessagePart(child as any, false);
           });
           i18nMessagePart.children = [];
 
-          const elementEndPlaceholder = types.builders.literal.from({
-            value: '\uFFFD/#' + childJSXElementId + '\uFFFD'
-          });
-          templateExpressions.push(elementEndPlaceholder);
+          // end placeholder
+          templateExpressions.push(types.builders.literal.from({
+            value: '\uFFFD/#' + placeholderId + '\uFFFD'
+          }));
 
-          const endTagPlaceholderSuffix = `:TAG_END_${openingElementName}#${childJSXElementId}:`;
+          // end comment
+          const endTagPlaceholderSuffix = `:TAG_END_${openingElementName}#${placeholderId}:`;
           templateQuasis.push(types.builders.templateElement.from({
             value: {
               raw: endTagPlaceholderSuffix,
@@ -216,7 +221,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
       })
     });
 
-    if (childJSXElements.length > 0) {
+    if (placeholderExpressions.length > 0) {
       elementsContainElement = true;
 
       const $jsxifyExpression = types.builders.callExpression.from({
@@ -224,7 +229,7 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAt
         arguments: [
           $localizeExpression,
           types.builders.arrayExpression.from({
-            elements: childJSXElements
+            elements: placeholderExpressions
           })
         ]
       });

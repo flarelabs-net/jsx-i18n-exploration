@@ -8,44 +8,52 @@ interface JsxifyNode {
 }
 
 
-export function $jsxify(message:string, elements: ReactElement[]) {
+export function $jsxify(message:string, expressions: unknown[]) {
   let rootNode: JsxifyNode = {parent: null, children: [], element: jsx(Fragment, {})};
   let nodeCursor = rootNode;
   let consumedMessageIndex = 0;
-  const usedElements = new Set<ReactElement>();
+  const usedExpressions = new Set<number>();
 
-  for (const match of message.matchAll(/\uFFFD(?<closing>\/)?#(?<elementIndex>\d+)(?<selfClosing>\/)?\uFFFD/g)) {
+  for (const match of message.matchAll(/\uFFFD(?<closing>\/)?#(?<expressionIndex>\d+)(?<selfClosing>\/)?\uFFFD/g)) {
   
-    if (match.index! > consumedMessageIndex) {
+  if (match.index! > consumedMessageIndex) {
       const text = message.slice(consumedMessageIndex, match.index!);
       nodeCursor.children.push(text);
     }
     consumedMessageIndex = match.index! + match[0].length;
 
-    const {closing, elementIndex: elementIndexString, selfClosing} = match.groups!;
+    const {closing, expressionIndex: expressionIndexString, selfClosing} = match.groups!;
     const opening = !closing;
     
-    const elementIndex = Number(elementIndexString);
-    if (elementIndex >= elements.length) {
-      throw new Error(`Invalid translation: Element index ${elementIndex} out of bounds for elements array of length ${elements.length}.\nTranslation: ${message}`);
+    const expressionIndex = Number(expressionIndexString);
+    if (expressionIndex >= expressions.length) {
+      throw new Error(`Invalid translation: Element index ${expressionIndex} out of bounds for elements array of length ${expressions.length}.\nTranslation: ${message}`);
     }
 
-    const element = elements[elementIndex];
-
+    const expressionResult = expressions[expressionIndex];
+    
     if (opening || selfClosing) {
-      if (usedElements.has(element)) {
-        throw new Error(`Invalid translation: Element #${elementIndex} (${JSON.stringify(element)}) has already been used.\nTranslation: ${message}`);
+      if (usedExpressions.has(expressionIndex)) {
+        throw new Error(`Invalid translation: Element #${expressionIndex} (${JSON.stringify(expressionResult)}) has already been used.\nTranslation: ${message}`);
       }
-      usedElements.add(element);
+      usedExpressions.add(expressionIndex);
+      
+      
+      if (isReactElement(expressionResult)) {
+        const newNode = {parent: nodeCursor, element: expressionResult, children: []}
+        nodeCursor.children.push(newNode);
+        if (!selfClosing) {
+          nodeCursor = newNode;
+        }
+      } else {
+        nodeCursor.children.push(expressionResult);
+      }
+      
 
-      const newNode = {parent: nodeCursor, element, children: []}
-      nodeCursor.children.push(newNode);
-      if (!selfClosing) {
-        nodeCursor = newNode;
-      }
+      
     } else {
-      if (nodeCursor.parent === null || element !== nodeCursor.element) {
-        throw new Error(`Invalid translation: Element #${elementIndex} (${JSON.stringify(element)}) is being closed before opening.\nTranslation: ${message}`);
+      if (nodeCursor.parent === null || expressionResult !== nodeCursor.element) {
+        throw new Error(`Invalid translation: Element #${expressionIndex} (${JSON.stringify(expressionResult)}) is being closed before opening.\nTranslation: ${message}`);
       };
 
       nodeCursor = nodeCursor.parent
@@ -57,10 +65,14 @@ export function $jsxify(message:string, elements: ReactElement[]) {
     nodeCursor.children.push(text);
   }
 
-  return nodeToJsx(rootNode);
+  return jsxifyNodeToJsxElement(rootNode);
 }
 
-function nodeToJsx(node: JsxifyNode): ReactElement {
-  const children = node.children.map(child => typeof child === 'string' ? child : nodeToJsx(child));
+function jsxifyNodeToJsxElement(node: JsxifyNode): ReactElement {
+  const children = node.children.map(child => isReactElement(child.element) ? jsxifyNodeToJsxElement(child) : child);
   return cloneElement(node.element, {}, ...children);
+}
+
+function isReactElement(value: unknown): value is ReactElement {
+  return typeof value === 'object' && value !== null && (value as any).$$typeof === Symbol.for("react.transitional.element");
 }
