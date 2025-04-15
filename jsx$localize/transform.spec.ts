@@ -47,8 +47,7 @@ describe('transform', () => {
       expect(code).toBe('<><div>{$localize`Hello world!`}</div></>');
     });
 
-    // TODO: add support for transforming <i18n/>
-    describe.skip('i18n element', () => {
+    describe('i18n element', () => {
       it('should transform messages wrapped in <i18n>', () => {
         const {code} = transform('<i18n>Hello world!</i18n>', 'test');
         expect(code).toBe('<>{$localize`Hello world!`}</>');
@@ -60,7 +59,7 @@ describe('transform', () => {
       });
 
       it('should transform messages wrapped in <i18n> with a id', () => {
-        const {code} = transform('<i18n description="@@helloId">Hello world!</i18n>', 'test');
+        const {code} = transform('<i18n id="helloId">Hello world!</i18n>', 'test');
         expect(code).toBe('<>{$localize`:@@helloId:Hello world!`}</>');
       });
 
@@ -70,7 +69,7 @@ describe('transform', () => {
       });
 
       it('should transform messages wrapped in <i18n> with a description, meaning, and id', () => {
-        const {code} = transform('<i18n description="a friendly greeting" meaning="login screen" id="@@helloId">Hello world!</i18n>', 'test');
+        const {code} = transform('<i18n description="a friendly greeting" meaning="login screen" id="helloId">Hello world!</i18n>', 'test');
         expect(code).toBe('<>{$localize`:login screen|a friendly greeting@@helloId:Hello world!`}</>');
       });
     });
@@ -104,9 +103,10 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
         const name = 'Jadzia';
 
-        export const interpolatedMessage = <div>{$localize\`Hello \${name}:INTERPOLATION_0:!\`}</div>;
+        export const interpolatedMessage = <div>{$jsxify($localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`, [name])}</div>;
         `);
     });
 
@@ -137,6 +137,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
         const greeting = 'Hello';
         const name = 'Jadzia';
         const superlative = 'amazing';
@@ -144,7 +145,10 @@ describe('transform', () => {
         const no = 'no';
         const spaceInBetween = 'spaceInBetween';
 
-        export const interpolatedMultiMessage =  <div>{$localize\`\${greeting}:INTERPOLATION_0: \${name}:INTERPOLATION_1:! How was your \${superlative}:INTERPOLATION_2: \${event}:INTERPOLATION_3:? \${no}:INTERPOLATION_4:\${spaceInBetween}:INTERPOLATION_5:?\`}</div>
+        export const interpolatedMultiMessage =  <div>{$jsxify(
+                        $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! How was your \${"�#2/�"}:INTERPOLATION#2: \${"�#3/�"}:INTERPOLATION#3:? \${"�#4/�"}:INTERPOLATION#4:\${"�#5/�"}:INTERPOLATION#5:?\`,
+                        [greeting, name, superlative, event, no, spaceInBetween]
+                )}</div>
         `);
     });
 
@@ -164,7 +168,7 @@ describe('transform', () => {
         const greetingEmoji = '👋';
 
         export const interpolatedComponentMessage =  <div>{$jsxify(
-                        $localize\`\${"\uFFFD#0/\uFFFD"}:INTERPOLATION#0: \${"\uFFFD#1/\uFFFD"}:INTERPOLATION#1:! \${"\uFFFD#2/\uFFFD"}:INTERPOLATION#2:\`,
+                        $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! \${"�#2/�"}:INTERPOLATION#2:\`,
                         [<Greeting/>, name, greetingEmoji]
                 )}</div>
         `);
@@ -179,7 +183,7 @@ describe('transform', () => {
 
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_hr#0:\`, [<hr/>])}</div>;
+        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_hr#0:\`, [<hr/>])}</div>;
         `);
     });
 
@@ -191,7 +195,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_span#0:world!\${"\uFFFD/#0\uFFFD"}:TAG_END_span#0:\`,
+                        $localize\`Hello \${"�#0�"}:TAG_START_span#0:world!\${"�/#0�"}:TAG_END_span#0:\`,
                         [<span></span>]
                 )}</div>;
         `);
@@ -209,8 +213,8 @@ describe('transform', () => {
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_b#0:\${"\uFFFD#1\uFFFD"}:TAG_START_i#1:my friend \${firstName}:INTERPOLATION_0:\${"\uFFFD/#1\uFFFD"}:TAG_END_i#1:\${"\uFFFD/#0\uFFFD"}:TAG_END_b#0:!\`,
-                        [<b></b>, <i></i>]
+                        $localize\`Hello \${"�#0�"}:TAG_START_b#0:\${"�#1�"}:TAG_START_i#1:my friend \${"�#2/�"}:INTERPOLATION#2:\${"�/#1�"}:TAG_END_i#1:\${"�/#0�"}:TAG_END_b#0:!\`,
+                        [<b></b>, <i></i>, firstName]
                 )}</div>;
         `);
     });
@@ -224,7 +228,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
         const Greeting = () => <span>Hello!</span>;
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"\uFFFD#0/\uFFFD"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
+        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
         `);
     });
 
@@ -236,8 +240,8 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"\uFFFD#0\uFFFD"}:TAG_START_Greeting#0:\${name}:INTERPOLATION_0:\${"\uFFFD/#0\uFFFD"}:TAG_END_Greeting#0:\`,
-                        [<Greeting kind="wild"></Greeting>]
+                        $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1/�"}:INTERPOLATION#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
+                        [<Greeting kind="wild"></Greeting>, name]
                 )}</div>;
         `);
     });
@@ -259,13 +263,17 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+          import { $jsxify } from "jsx$localize/react";
           const loggedIn = true;
           const UserProfile = function () {
             return 'userprofile';
           };
-          
+
           const nestedJSX = (
-            <div>{$localize\`Hello \${loggedIn ? <UserProfile /> : 'world'}:INTERPOLATION_0:!\`}</div>
+            <div>{$jsxify(
+                $localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`,
+                [loggedIn ? <UserProfile /> : 'world']
+              )}</div>
           );
         `);
     });
@@ -286,10 +294,13 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+          import { $jsxify } from "jsx$localize/react";
           const loggedIn = true;
-          
+
           const nestedJSX = (
-            <div>{$localize\`Hello \${loggedIn ? <span>{$localize\`friend\`}</span> : <span>{$localize\`stranger\`}</span>}:INTERPOLATION_0:\`}</div>
+            <div>{$jsxify($localize\`Hello \${"�#0/�"}:INTERPOLATION#0:\`, [
+                loggedIn ? <span>{$localize\`friend\`}</span> : <span>{$localize\`stranger\`}</span>
+              ])}</div>
           );
         `);
     });
@@ -405,8 +416,8 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "jsx$localize/react";
         export const complexWhitespace = <div>{$jsxify(
-            $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${name}:INTERPOLATION_0:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
-            [<Greeting kind="wild"></Greeting>, <b></b>, <i></i>]
+            $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${"�#3/�"}:INTERPOLATION#3:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
+            [<Greeting kind="wild"></Greeting>, <b></b>, <i></i>, name]
           )}</div>;
         `);
     });

@@ -29,48 +29,100 @@ export function transform(code: string, moduleId: string): TransformResult {
 }
 
 
-function findAndCleanupAllI18nElements(rootNode: types.ASTNode): [types.namedTypes.JSXElement[], types.namedTypes.JSXAttribute[]] {
+function findAndCleanupAllI18nElements(rootNode: types.ASTNode): [types.namedTypes.JSXElement[], string[]] {
   const i18nElements: types.namedTypes.JSXElement[] = [];
-  const i18nAttrs: types.namedTypes.JSXAttribute[] = [];
+  const i18nMetadata: string[] = [];
 
   types.visit(rootNode, {
     visitJSXElement(path) {
       const node = path.node;
-      const i18nAttr = node.openingElement.attributes?.find((attr, index) => {
-        if (types.namedTypes.JSXAttribute.check(attr) && attr.name.name === 'i18n') {
-          // Drop the i18n attribute
-          node.openingElement.attributes?.splice(index, 1);
-          return true;
-        }
-      }) as types.namedTypes.JSXAttribute | undefined;
+      let meaning = '';
+      let description = '';
+      let id = '';
       
-      if (i18nAttr) {
-        i18nAttrs.push(i18nAttr);
-        i18nElements.push(node);
+      if (types.namedTypes.JSXIdentifier.check(node.openingElement.name) &&
+            node.openingElement.name.name === 'i18n') {
+
+              node.openingElement.attributes?.forEach((attr) => {
+                if (!types.namedTypes.JSXAttribute.check(attr)) {
+                  throw new Error('Unsupported attribute type: ' + attr.type);
+                }
+
+                if (!types.namedTypes.Literal.check(attr.value)) {
+                  throw new Error('Unsupported attribute value type: ' + attr.value!.type);
+                }
+
+                switch (attr.name.name) {
+                  case 'meaning': {
+                    meaning = `${attr.value.value}`;
+                    break;
+                  }
+                  case 'description': {
+                    description = `${attr.value.value}`;
+                    break;
+                  }
+                  case 'id': {
+                    id = `${attr.value.value}`;
+                    break;
+                  }
+                }
+            });
+
+            // compose the i18n metadata
+            const i18nMetadataInfo = (meaning ? `${meaning}|` : '') +
+                                    (description ? description : '') +
+                                    (id ? `@@${id}` : '');
+
+            i18nMetadata.push(i18nMetadataInfo);
+
+            // replace <i18n>...</i18n> with <>...</>
+            path.replace(types.builders.jsxFragment.from({
+              openingFragment: types.builders.jsxOpeningFragment(),
+              closingFragment: types.builders.jsxClosingFragment(),
+              children: node.children
+            }));
+
+            i18nElements.push(path.node);
+
+      } else {
+        const i18nAttr = node.openingElement.attributes?.find((attr, index) => {
+          if (types.namedTypes.JSXAttribute.check(attr) && attr.name.name === 'i18n') {
+            // Drop the i18n attribute
+            node.openingElement.attributes?.splice(index, 1);
+            return true;
+          }
+        }) as types.namedTypes.JSXAttribute | undefined;
+
+        if (i18nAttr) {
+          const i18nAttrValue = i18nAttr.value;
+
+          if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) {
+            throw new Error('i18n attribute value must be a literal, was: ' + i18nAttrValue?.type);
+          }
+
+          i18nMetadata.push(`${i18nAttrValue?.value ?? ''}`);
+          i18nElements.push(node);
+        }
       }
       this.traverse(path);
     }
   });
 
-  return [i18nElements, i18nAttrs];
+  return [i18nElements, i18nMetadata];
 }
 
-function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nAttrs: types.namedTypes.JSXAttribute[]) {
+function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nMetadata: string[]) {
   let elementsContainElement = false;
 
   i18nElements.forEach((i18nElement, elementIndex) => {
-
-    let i18nAttr = i18nAttrs[elementIndex];
-    let i18nAttrValue = i18nAttr.value;
-
-    if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) throw new Error('i18n attribute value must be a literal, was: ' + i18nAttrValue?.type);
 
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
     const templateQuasis: types.namedTypes.TemplateElement[] = [];
     let placeholderExpressions: Array<types.namedTypes.JSXElement | Exclude<types.namedTypes.JSXExpressionContainer['expression'], types.namedTypes.JSXEmptyExpression>> = [];
 
+    let messageMetadata = i18nMetadata[elementIndex];
     // The message needs to be prefixed with description, meaning, and/or id (if defined)
-    const translationMessagePrefix = i18nAttrValue ? `:${i18nAttrValue.value}:` : '';
+    const translationMessagePrefix = messageMetadata ? `:${messageMetadata}:` : '';
 
     // Initialize templateQuasis with the message the description prefix
     templateQuasis.push(types.builders.templateElement.from({

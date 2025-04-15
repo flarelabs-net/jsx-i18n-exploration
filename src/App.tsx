@@ -10,6 +10,14 @@ declare module 'react' {
     'i18n-attr-title'?: string | boolean | undefined;
   }
 }
+declare module "react/jsx-runtime" {
+  namespace JSX {
+    interface IntrinsicElements {
+      "i18n": { meaning?: string; description?: string; id?: string, children: unknown };
+    }
+  }
+}
+
 
 function App() {
   // const name = 'Jadzia';
@@ -63,6 +71,10 @@ function App() {
       <div i18n>
         Hello world!
       </div>
+
+      <i18n>
+        Hello div-less moon!
+      </i18n>
 
       {/*
       <Trans id="welcome.friendly-greeting" />

@@ -2,6 +2,7 @@
   "locale": "sk",
   "translations": {
     "3022994926184248873": "Ahoj svet!",
+    "1883009908439134069": "Ahoj mesiac bez div-ov!",
     "5409276029299992559": "Ahoj {$INTERPOLATION#0}!",
     "3851164729407824548": "Klikni a pridaj: {$TAG_START_button#0}pocet={$INTERPOLATION#1}{$TAG_END_button#0}",
     "3068867521678628916": "Ahoj {$TAG_START_b#0}{$TAG_START_i#1}moj priatel {$INTERPOLATION#2}{$TAG_END_i#1}{$TAG_END_b#0}!",
