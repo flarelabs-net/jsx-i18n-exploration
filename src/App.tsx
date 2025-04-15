@@ -72,12 +72,17 @@ function App() {
         Hello world!
       </div>
 
+      {/* compare to status quo:
+      <Trans id="welcome.friendly-greeting" />
+      */}
+
+
       <i18n>
         Hello div-less moon!
       </i18n>
 
-      {/*
-      <Trans id="welcome.friendly-greeting" />
+      {/* compare to status quo:
+      <Trans id="welcome.friendly-moon-greeting" />
       */}
 
 
@@ -85,7 +90,7 @@ function App() {
         Hello {firstName}!
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" vars={{name: firstName}} />
       */}
 
@@ -94,7 +99,7 @@ function App() {
         Click to increment: <button onClick={increment}>count={count}</button>
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" ???? />
       */}
 
@@ -103,7 +108,7 @@ function App() {
         Hello <b><i>my friend {firstName}</i></b>!
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" vars={{name: firstName}} />
       */}
 
@@ -116,7 +121,7 @@ function App() {
         *suffix*
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" Components={[Greeting]} componentProps={[{name: firstName}]} />
       */}
 
@@ -129,7 +134,7 @@ function App() {
         *suffix*
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" Components={[Greeting]} componentProps={[{name: "self-closing"}]} />
       */}
 
@@ -142,7 +147,7 @@ function App() {
         *suffix*
       </div>
 
-      {/*
+      {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" Components={[Greeting, Greeting]} componentProps={[{name: "swapped"}, {name: "double"}]} />
       */}
 

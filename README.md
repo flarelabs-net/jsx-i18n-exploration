@@ -47,7 +47,7 @@ To translate a newly added message, append the translated message using the same
 
 ## Example usage
 
-https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/src/App.tsx#L63-L141
+See [src/App.tsx](./src/App.tsx#L71-L165) for many usage examples.
 
 Even more examples can be found in the test suite: [./jsx$localize/transform.spec.ts](./jsx$localize/transform.spec.ts)
 
