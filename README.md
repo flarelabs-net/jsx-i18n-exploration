@@ -1,50 +1,67 @@
-# React + TypeScript + Vite
+# JSX i18n exploration
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Goal: Could internationalization of JSX/TSX templates be as natural as writing JSX itself?
 
-Currently, two official plugins are available:
+This project attempts to achieve that goal via a JSX pre-processor that can run as a Vite plugin in a way that mimics how [Angular's i18n works](https://angular.dev/guide/i18n/prepare).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting started
 
-## Expanding the ESLint configuration
+1. Checkout this repo
+2. `pnpm install`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Dev mode flow:
+`pnpm dev`
 
-- Configure the top-level `parserOptions` property like this:
+Prod mode flow:
+`pnpm build-and-preview`
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+
+## Authoring i18n messages
+
+To create a internationalizable message block just add `i18n` attribute to any JSX element in the template.
+
+For example instead of
+
+```tsx
+<div>Hello world!</div>
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+write
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```tsx
+<div i18n>Hello world!</div>
 ```
+
+That's it!
+
+To extract the "Hello world!" string, run `pnpm build && pnpm extract-messages:json`.
+The message will be stored in [`messages.json`](./messages.json) file along with its fingerprint.
+
+To translate a newly added message, append the translated message using the same fingerprint key to [`messages-sk.json`](./messages-sk.json) and return `pnpm build-and-preview`.
+
+## Example usage
+
+https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/src/App.tsx#L63-L141
+
+Even more examples can be found in the test suite: [./jsx$localize/transform.spec.ts](./jsx$localize/transform.spec.ts)
+
+
+## How does it work?
+
+- Relies on Angular's $localize for all the heavy lifting of message extraction, and [runtime as well as build time localization](https://qwik.dev/docs/integrations/i18n/#runtime-vs-compile-time-translation).
+- Uses `recast` and `babel-ts` parser to parse and mutate JSX/TSX AST while preserving source maps.
+- Turns all message blocks with interpolation or nested components into an intermediate format which survives translation and message merging, and supports component reordering. This is the format that is extracted by $localized and translated.
+- This intermediate format is then turned back to JSX at runtime using a runtime specific [`$jsxify` function](./jsx$localize/react/jsxify.ts).
+- All of this is packaged as Vite plugin so that it can be dropped into any project.
+
+
+## TODOs
+
+- [ ] add support for internationalization of html attributes, e.g. `<img title="cute puppy pick" i18n-title src="...">`
+- [ ] consider creating `<i18n>` component to enable usage without an existing element wrapper, e.g. `<i18n>Hello world!</i18n>` ([see disabled tests](https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/jsx%24localize/transform.spec.ts#L51-L76) for more info)
+- [ ] add tests for the `jsxify` function
+- [ ] automate e2e tests
+- [ ] publish as an npm package
+- [ ] usage docs
+- [ ] add support for pluralization via ICUs
+- [ ] add support for Qwik
