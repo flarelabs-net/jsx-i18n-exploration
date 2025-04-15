@@ -58,7 +58,7 @@ Even more examples can be found in the test suite: [./jsx$localize/transform.spe
 ## TODOs
 
 - [ ] add support for internationalization of html attributes, e.g. `<img title="cute puppy pick" i18n-title src="...">`
-- [ ] consider creating `<i18n>` component to enable usage without an existing element wrapper, e.g. `<i18n>Hello world!</i18n>` ([see disabled tests](https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/jsx%24localize/transform.spec.ts#L51-L76) for more info)
+- [ ] consider creating `<i18n>` component to enable usage without an existing element wrapper, e.g. `<I18n>Hello world!</I18n>` ([see disabled tests](https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/jsx%24localize/transform.spec.ts#L51-L76) for more info)
 - [ ] add tests for the `jsxify` function
 - [ ] automate e2e tests
 - [ ] publish as an npm package
