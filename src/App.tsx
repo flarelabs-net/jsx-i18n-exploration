@@ -59,6 +59,11 @@ function App() {
         Hello world!
       </div>
 
+      { /* or alternatively using pseudo <i18n element, without the <div> element wrapper */}
+      <i18n>
+        Hello world!
+      </i18n>
+
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" />
       */}

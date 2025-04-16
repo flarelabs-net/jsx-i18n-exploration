@@ -46,7 +46,7 @@ Additionally, you can also internationalize element attributes by adding a match
 
 That's it!
 
-To extract the "Hello world!" string, run `pnpm build && pnpm extract-messages:json`.
+To extract the "Hello world!" string, run `npm extract-messages`.
 The message will be stored in [`messages.json`](./messages.json) file along with its fingerprint.
 
 To translate a newly added message, append the translated message using the same fingerprint key to [`messages-sk.json`](./messages-sk.json) and return `pnpm build-and-preview`.
