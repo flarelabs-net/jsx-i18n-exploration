@@ -11,6 +11,9 @@
     "3425301371500802564": "*prefix*{$TAG_START_u#0}first: {$TAG_Greeting#1}second: {$TAG_Greeting#2}{$TAG_END_u#0}*suffix*",
     "7038478515118200521": "Hello {$INTERPOLATION#0}",
     "851356095055752738": "friend",
-    "1731727367063270301": "stranger"
+    "1731727367063270301": "stranger",
+    "3199041561936129511": "a puppy pic",
+    "532397050525213557": "This is a pic of my dog:{$TAG_img#0}",
+    "4428182456273842227": "dog pic"
   }
 }

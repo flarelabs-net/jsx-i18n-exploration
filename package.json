@@ -9,11 +9,13 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "extract-messages": "pnpm extract-messages:json && pnpm extract-messages:xlif",
     "extract-messages:json": "localize-extract --source dist/**/*.js --format json --outputPath messages.json",
+    "extract-messages:xlif": "localize-extract --source dist/**/*.js --format xlif --outputPath messages.xlf",
     "translate:json": "localize-translate --root dist/ --source '**' --source-locale en  --translations ./messages-sk.json --missingTranslation error --outputPath dist-localized/{{LOCALE}}/",
     "preview:en": "vite preview --port 3000 --outDir ./dist-localized/en/",
     "preview:sk": "vite preview --port 3001 --outDir ./dist-localized/sk/",
-    "extract-messages:xlif": "localize-extract --source dist/**/*.js --format xlif --outputPath messages.xlf",
+    
     "build-and-preview": "pnpm build && pnpm extract-messages:json && pnpm extract-messages:xlif && pnpm translate:json && pnpm run preview:sk"
   },
   "dependencies": {

@@ -11,6 +11,9 @@
     "3425301371500802564": "*predpona*{$TAG_START_u#0}druhy: {$TAG_Greeting#2}prvy: {$TAG_Greeting#1}{$TAG_END_u#0}*koncovka*",
     "7038478515118200521": "Ahoj {$INTERPOLATION#0}",
     "851356095055752738": "priatel",
-    "1731727367063270301": "cudzinec"
+    "1731727367063270301": "cudzinec",
+    "3199041561936129511": "foto psika",
+    "532397050525213557": "Toto je foto mojho psa:{$TAG_img#0}",
+    "4428182456273842227": "foto psa"
   }
 }

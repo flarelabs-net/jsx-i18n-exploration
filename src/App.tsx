@@ -20,22 +20,7 @@ declare module "react/jsx-runtime" {
 
 
 function App() {
-  // const name = 'Jadzia';
-
-  // const simpleAttribute = (
-  //   <img title="dog pic" i18n-attr-title src="https://placehold.co/50x50/png" />
-  // );
-
-  // const nestedAttribute = (
-  //   <div i18n>
-  //     This is a pic of my dog:
-  //     <img
-  //       title="dog pic"
-  //       i18n-attr-title
-  //       src="https://placehold.co/50x50/png"
-  //     />
-  //   </div>
-  // );
+  
 
   // TODO: plural/select support
   // https://v17.angular.io/guide/i18n-common-prepare#icu-expressions
@@ -65,6 +50,8 @@ function App() {
   const UserProfile = function () {
     return <>userprofile</>;
   };
+
+  const puppyName = 'Jadzia';
 
   return (
     <>
@@ -153,10 +140,19 @@ function App() {
 
       <div i18n>Hello {loggedIn ? <UserProfile /> : 'world'}!</div>
 
+
       <div i18n>
         Hello {loggedIn ? <span i18n>friend</span> : <span i18n>stranger</span>}
       </div>
 
+
+      <img title="a puppy pic" i18n-attr-title src="https://placehold.co/50x50/png" />
+
+
+      <div i18n>
+        This is a pic of my dog:
+        <img alt="dog pic" i18n-attr-alt src="https://placehold.co/50x50/png"/>
+      </div>
     </>
   );
 }

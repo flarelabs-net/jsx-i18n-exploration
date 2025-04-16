@@ -38,6 +38,12 @@ or if you want to avoid the extra `<div>` wrapper, write just:
 <i18n>Hello world!</i18n>
 ```
 
+Additionally, you can also internationalize element attributes by adding a matching `i18n-attr-<attributeName>` attribute to the element:
+
+```tsx
+<img alt="a cute puppy pic" i18n-attr-alt />
+```
+
 That's it!
 
 To extract the "Hello world!" string, run `pnpm build && pnpm extract-messages:json`.
@@ -47,7 +53,7 @@ To translate a newly added message, append the translated message using the same
 
 ## Example usage
 
-See [src/App.tsx](./src/App.tsx#L71-L165) for many usage examples.
+See [src/App.tsx](./src/App.tsx#L57-L165) for many usage examples.
 
 Even more examples can be found in the test suite: [./jsx$localize/transform.spec.ts](./jsx$localize/transform.spec.ts)
 
@@ -63,7 +69,7 @@ Even more examples can be found in the test suite: [./jsx$localize/transform.spe
 
 ## TODOs
 
-- [ ] add support for internationalization of html attributes, e.g. `<img title="cute puppy pick" i18n-title src="...">`
+- [x] add support for internationalization of html attributes, e.g. `<img title="a cute puppy pic" i18n-attr-title src="...">`
 - [x] consider creating `<i18n>` component to enable usage without an existing element wrapper, e.g. `<i18n>Hello world!</i18n>` ([see disabled tests](https://github.com/flarelabs-net/jsx-i18n-exploration/blob/0ee307d4e0d66c5862779e08503e99dd3b52a627/jsx%24localize/transform.spec.ts#L51-L76) for more info)
 - [ ] add tests for the `jsxify` function
 - [ ] automate e2e tests

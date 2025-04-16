@@ -422,4 +422,115 @@ describe('transform', () => {
         `);
     });
   });
+
+  describe('i18n-attr', () => {
+
+    it('should transform a simple i18n-attr-', () => {
+      const {code} = transform(`
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt/>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttr = <img alt={$localize\`a cute puppy pic\`} />;
+        `);
+    });
+
+    it('should transform a simple i18n-attr- with description', () => {
+      const {code} = transform(`
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="puppy image title text"/>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttr = <img alt={$localize\`:puppy image title text:a cute puppy pic\`} />;
+        `);
+    });
+
+    it('should transform a simple i18n-attr- with meaning', () => {
+      const {code} = transform(`
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="login screen|"/>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttr = <img alt={$localize\`:login screen|:a cute puppy pic\`} />;
+        `);
+    });
+
+    it('should transform a simple i18n-attr- with id', () => {
+      const {code} = transform(`
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="@@myTitleId"/>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttr = <img alt={$localize\`:@@myTitleId:a cute puppy pic\`} />;
+        `);
+    });
+
+    it('should transform a simple i18n-attr- with meaning, description, and id', () => {
+      const {code} = transform(`
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="login screen|puppy image title text@@myTitleId"/>;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttr = <img
+                alt={$localize\`:login screen|puppy image title text@@myTitleId:a cute puppy pic\`} />;
+        `);
+    });
+
+    it('should transform multiple i18n-attr- attributes', () => {
+      const {code} = transform(`
+        export const i18nAttrMultiple = <img alt="a cute puppy pic" i18n-attr-alt
+                                             src="some-img.png" i18n-attr-src
+                                             foo="bar" i18n-attr-foo />;
+        `, 'test');
+
+      expect(code).toBe(`
+        export const i18nAttrMultiple = <img
+                alt={$localize\`a cute puppy pic\`}
+                src={$localize\`some-img.png\`}
+                foo={$localize\`bar\`} />;
+        `);
+    });
+
+    it('should transform an i18n-attr attributes on i18n blocks and nested within', () => {
+      const {code} = transform(`
+        export const i18nAttrNested = <p i18n title="some title" i18n-attr-title>
+            <img alt="a cute puppy pic" i18n-attr-alt/>
+          </p>
+        `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "jsx$localize/react";
+        export const i18nAttrNested = <p title={$localize\`some title\`}>{$jsxify(
+            $localize\`\${"�#0/�"}:TAG_img#0:\`,
+            [<img alt={$localize\`a cute puppy pic\`} />]
+          )}</p>
+        `);
+    });
+
+    it('should error if i18n-attr- attribute is bound to an expression', () => {
+      expect(() => {
+        transform(`
+          export const i18nAttr = <img i18n-attr-alt={'foo'} alt="foo"/>;
+          `, 'test');
+      }).toThrow(`i18n error: value of attribute 'i18n-attr-alt' must be a literal, was: JSXExpressionContainer`);
+    });
+
+    it('should error if i18n-attr- points to an attribute bound to an expression', () => {
+      expect(() => {
+        transform(`
+          export const i18nAttr = <img i18n-attr-alt alt={'foo'}/>;
+          `, 'test');
+      }).toThrow(`i18n error: value of attribute 'alt' must be a literal, was: JSXExpressionContainer`);
+    });
+
+
+    it(`should error if i18n-attr- is used without a matching attribute`, () => {
+      expect(() => {
+        transform(`
+          export const i18nAttr = <img i18n-attr-title/>;
+          `, 'test');
+      }).toThrow(`i18n error: attribute 'i18n-attr-title' doesn't have matching peer attribute 'title' on element 'img'`);
+    });
+
+  });
 });
