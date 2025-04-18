@@ -379,7 +379,7 @@ function addJsxifyImport(rootNode: Array<types.ASTNode>) {
       imported: types.builders.identifier.from({ name: '$jsxify' }),
       local: types.builders.identifier.from({ name: '$jsxify' })
     })],
-    types.builders.literal.from({ value: 'jsx$localize/react' })
+    types.builders.literal.from({ value: '@flarelabs-net/jsx-localize/react' })
   );
 
   rootNode.unshift(importDeclaration);

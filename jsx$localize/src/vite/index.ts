@@ -1,5 +1,5 @@
 import type { Plugin } from 'vite';
-import { transform } from './transform';
+import { transform } from '../transform';
 
 
 export default function jsx$localize() {

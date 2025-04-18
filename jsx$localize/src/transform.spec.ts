@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { transform } from './transform';
-import { fragmentMessage } from '../src/scenarios/fragmentMessage';
 
 
 describe('transform', () => {
@@ -103,7 +102,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const name = 'Jadzia';
 
         export const interpolatedMessage = <div>{$jsxify($localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`, [name])}</div>;
@@ -137,7 +136,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const greeting = 'Hello';
         const name = 'Jadzia';
         const superlative = 'amazing';
@@ -162,7 +161,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const Greeting = () => <span>Hello</span>;
         const name = <span>Jadzia</span>;
         const greetingEmoji = '👋';
@@ -182,7 +181,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_hr#0:\`, [<hr/>])}</div>;
         `);
     });
@@ -193,7 +192,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const nestedHtml = <div>{$jsxify(
                         $localize\`Hello \${"�#0�"}:TAG_START_span#0:world!\${"�/#0�"}:TAG_END_span#0:\`,
                         [<span></span>]
@@ -209,7 +208,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
@@ -226,7 +225,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const Greeting = () => <span>Hello!</span>;
         export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
         `);
@@ -238,7 +237,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const nestedHtml = <div>{$jsxify(
                         $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1/�"}:INTERPOLATION#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
                         [<Greeting kind="wild"></Greeting>, name]
@@ -263,7 +262,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-          import { $jsxify } from "jsx$localize/react";
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
           const loggedIn = true;
           const UserProfile = function () {
             return 'userprofile';
@@ -294,7 +293,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-          import { $jsxify } from "jsx$localize/react";
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
           const loggedIn = true;
 
           const nestedJSX = (
@@ -414,7 +413,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const complexWhitespace = <div>{$jsxify(
             $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${"�#3/�"}:INTERPOLATION#3:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
             [<Greeting kind="wild"></Greeting>, <b></b>, <i></i>, name]
@@ -499,7 +498,7 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        import { $jsxify } from "jsx$localize/react";
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const i18nAttrNested = <p title={$localize\`some title\`}>{$jsxify(
             $localize\`\${"�#0/�"}:TAG_img#0:\`,
             [<img alt={$localize\`a cute puppy pic\`} />]

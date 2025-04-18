@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import jsx$localize from './jsx$localize'
+import jsx$localize from './jsx$localize/src/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      'jsx$localize/react': import.meta.resolve('../../jsx$localize/react/index.ts'),
+      '@flarelabs-net/jsx-localize/react': import.meta.resolve('../../jsx$localize/src/react/index.ts'),
     }
   },
   build: {

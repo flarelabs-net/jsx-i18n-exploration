@@ -1,22 +1,8 @@
 import '@angular/localize/init';
 import './App.css';
+import '@flarelabs-net/jsx-localize/react';
 
 import { useState } from 'react';
-
-
-declare module 'react' {
-  interface HTMLAttributes<T> {
-    'i18n'?: string | boolean | undefined;
-    'i18n-attr-title'?: string | boolean | undefined;
-  }
-}
-declare module "react/jsx-runtime" {
-  namespace JSX {
-    interface IntrinsicElements {
-      "i18n": { meaning?: string; description?: string; id?: string, children: unknown };
-    }
-  }
-}
 
 
 function App() {
@@ -55,6 +41,7 @@ function App() {
 
   return (
     <>
+
       <div i18n>
         Hello world!
       </div>

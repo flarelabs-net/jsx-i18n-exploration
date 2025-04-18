@@ -1,0 +1,35 @@
+{
+  "name": "@flarelabs-net/jsx-localize",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+		"./react": {
+			"import": "./dist/react.js",
+      "types": "./dist/react.d.ts"
+		},
+		"./vite": {
+			"import": "./dist/vite.js"
+		}
+	},
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -b && vite build && cp ./src/react/globals.ts ./dist/react.d.ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "recast": "^0.23.9"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "@angular/localize": "^19.1.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.8",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "^3.1.1"
+  }
+}

@@ -3,12 +3,12 @@ import {cloneElement, ReactElement } from 'react';
 
 interface JsxifyNode {
   parent: JsxifyNode | null;
-  children: (JsxifyNode|string)[];
+  children: (JsxifyNode| string | boolean | null | number | RegExp | BigInt)[];
   element: ReactElement;
 }
 
 
-export function $jsxify(message:string, expressions: unknown[]) {
+export function $jsxify(message:string, expressions: (ReactElement | string | boolean | null | number | RegExp | BigInt)[]) {
   let rootNode: JsxifyNode = {parent: null, children: [], element: jsx(Fragment, {})};
   let nodeCursor = rootNode;
   let consumedMessageIndex = 0;
@@ -69,7 +69,11 @@ export function $jsxify(message:string, expressions: unknown[]) {
 }
 
 function jsxifyNodeToJsxElement(node: JsxifyNode): ReactElement {
-  const children = node.children.map(child => isReactElement(child.element) ? jsxifyNodeToJsxElement(child) : child);
+  const children = node.children.map(child => 
+    typeof child === 'object' && child !== null && 'element' in child && isReactElement(child.element) 
+      ? jsxifyNodeToJsxElement(child as JsxifyNode) 
+      : child
+  ) as any[];
   return cloneElement(node.element, {}, ...children);
 }
 

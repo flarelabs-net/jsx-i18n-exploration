@@ -1,0 +1,12 @@
+packages:
+  - "jsx$localize/*"
+  
+# Define a catalog of version ranges for dependencies through the workspace
+# https://pnpm.io/catalogs
+catalog:
+  prettier: ^3.5.3
+  react: ^19.0.0
+  typescript: ^5.8.3
+  vite: ^6.3.1
+  vitest: ^3.1.1
+  
