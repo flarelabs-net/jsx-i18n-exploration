@@ -7,8 +7,17 @@ interface JsxifyNode {
   element: ReactElement;
 }
 
+export function $jsxify(messageFn: () => string, expressions: (ReactElement | string | boolean | null | number | RegExp | BigInt)[]) {
+  return jsx(Fragment, {
+    // It's crucial that we deffer evaluation of the messageFn until we are actually rendering UI.
+    // See "Note about deferred evaluation of $localize expressions" in transform.ts
+    get children() {
+      return messageToJsx(messageFn(), expressions);
+    }
+  });
+}
 
-export function $jsxify(message:string, expressions: (ReactElement | string | boolean | null | number | RegExp | BigInt)[]) {
+function messageToJsx(message: string, expressions: (ReactElement | string | boolean | null | number | RegExp | BigInt)[]) {
   let rootNode: JsxifyNode = {parent: null, children: [], element: jsx(Fragment, {})};
   let nodeCursor = rootNode;
   let consumedMessageIndex = 0;
@@ -48,8 +57,6 @@ export function $jsxify(message:string, expressions: (ReactElement | string | bo
       } else {
         nodeCursor.children.push(expressionResult);
       }
-      
-
       
     } else {
       if (nodeCursor.parent === null || expressionResult !== nodeCursor.element) {

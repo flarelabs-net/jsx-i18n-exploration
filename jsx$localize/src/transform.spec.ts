@@ -4,72 +4,151 @@ import { transform } from './transform';
 
 describe('transform', () => {
   describe('simple JSX element translation', () => {
+    
     it('should transform a simple JSX element', () => {
-      const {code} = transform(`<div i18n>Hello world!</div>`, 'test');
-      expect(code).toBe('<div>{$localize`Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n>Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with a description', () => {
-      const {code} = transform('<div i18n="a friendly greeting">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:a friendly greeting:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="a friendly greeting">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:a friendly greeting:Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with an id', () => {
-      const {code} = transform('<div i18n="@@helloId">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:@@helloId:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="@@helloId">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:@@helloId:Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with meaning', () => {
-      const {code} = transform('<div i18n="login screen|">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:login screen|:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="login screen|">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:login screen|:Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with meaning and description', () => {
-      const {code} = transform('<div i18n="login screen|a friendly greeting">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:login screen|a friendly greeting:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="login screen|a friendly greeting">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:login screen|a friendly greeting:Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with a description and an id', () => {
-      const {code} = transform('<div i18n="a friendly greeting @@helloId">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:a friendly greeting @@helloId:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="a friendly greeting @@helloId">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:a friendly greeting @@helloId:Hello world!\`)}</div>
+      `);
     });
 
     it('should transform a simple JSX element with a description, meaning, and id', () => {
-      const {code} = transform('<div i18n="login screen|a friendly greeting@@helloId2">Hello world!</div>', 'test');
-      expect(code).toBe('<div>{$localize`:login screen|a friendly greeting@@helloId2:Hello world!`}</div>');
+      const {code} = transform(`
+        <div i18n="login screen|a friendly greeting@@helloId2">Hello world!</div>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <div>{$jsxify(() => $localize\`:login screen|a friendly greeting@@helloId2:Hello world!\`)}</div>
+      `);
     });
   });
 
   describe('JSX fragments', () => {
     it('should transform messages wrapped in JSX fragments', () => {
-      const {code} = transform('<><div i18n>Hello world!</div></>', 'test');
-      expect(code).toBe('<><div>{$localize`Hello world!`}</div></>');
+      const {code} = transform(`
+        <><div i18n>Hello world!</div></>
+      `, 'test');
+
+      expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        <><div>{$jsxify(() => $localize\`Hello world!\`)}</div></>
+      `);
     });
 
     describe('i18n element', () => {
       it('should transform messages wrapped in <i18n>', () => {
-        const {code} = transform('<i18n>Hello world!</i18n>', 'test');
-        expect(code).toBe('<>{$localize`Hello world!`}</>');
+        const {code} = transform(`
+          <i18n>Hello world!</i18n>
+        `, 'test');
+
+        expect(code).toBe(`
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+          <>{$jsxify(() => $localize\`Hello world!\`)}</>
+        `);
       });
 
       it('should transform messages wrapped in <i18n> with a description', () => {
-        const {code} = transform('<i18n description="a friendly greeting">Hello world!</i18n>', 'test');
-        expect(code).toBe('<>{$localize`:a friendly greeting:Hello world!`}</>');
+        const {code} = transform(`
+          <i18n description="a friendly greeting">Hello world!</i18n>
+        `, 'test');
+
+        expect(code).toBe(`
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+          <>{$jsxify(() => $localize\`:a friendly greeting:Hello world!\`)}</>
+        `);
       });
 
       it('should transform messages wrapped in <i18n> with a id', () => {
-        const {code} = transform('<i18n id="helloId">Hello world!</i18n>', 'test');
-        expect(code).toBe('<>{$localize`:@@helloId:Hello world!`}</>');
+        const {code} = transform(`
+          <i18n id="helloId">Hello world!</i18n>
+        `, 'test');
+
+        expect(code).toBe(`
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+          <>{$jsxify(() => $localize\`:@@helloId:Hello world!\`)}</>
+        `);
       });
 
       it('should transform messages wrapped in <i18n> with meaning', () => {
-        const {code} = transform('<i18n meaning="login screen">Hello world!</i18n>', 'test');
-        expect(code).toBe('<>{$localize`:login screen|:Hello world!`}</>');
+        const {code} = transform(`
+          <i18n meaning="login screen">Hello world!</i18n>
+        `, 'test');
+
+        expect(code).toBe(`
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+          <>{$jsxify(() => $localize\`:login screen|:Hello world!\`)}</>
+        `);
       });
 
       it('should transform messages wrapped in <i18n> with a description, meaning, and id', () => {
-        const {code} = transform('<i18n description="a friendly greeting" meaning="login screen" id="helloId">Hello world!</i18n>', 'test');
-        expect(code).toBe('<>{$localize`:login screen|a friendly greeting@@helloId:Hello world!`}</>');
+        const {code} = transform(`
+          <i18n description="a friendly greeting" meaning="login screen" id="helloId">Hello world!</i18n>
+        `, 'test');
+
+        expect(code).toBe(`
+          import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+          <>{$jsxify(() => $localize\`:login screen|a friendly greeting@@helloId:Hello world!\`)}</>
+        `);
       });
     });
 
@@ -85,10 +164,11 @@ describe('transform', () => {
         }`, 'test');
 
       expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const multipleMessages = {
-          message1: <div>{$localize\`Hello world!\`}</div>,
-          message2: <div>{$localize\`:a friendly bye bye:Have a nice day!\`}</div>,
-          fragment: (<><span></span><div>{$localize\`Hello world!\`}</div></>),
+          message1: <div>{$jsxify(() => $localize\`Hello world!\`)}</div>,
+          message2: <div>{$jsxify(() => $localize\`:a friendly bye bye:Have a nice day!\`)}</div>,
+          fragment: (<><span></span><div>{$jsxify(() => $localize\`Hello world!\`)}</div></>),
         }`);
     });
   });
@@ -105,7 +185,7 @@ describe('transform', () => {
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const name = 'Jadzia';
 
-        export const interpolatedMessage = <div>{$jsxify($localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`, [name])}</div>;
+        export const interpolatedMessage = <div>{$jsxify(() => $localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`, [name])}</div>;
         `);
     });
 
@@ -117,9 +197,10 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const name = 'Jadzia';
 
-        export const interpolatedMessage = <div>{$localize\`Hello!\`}</div>;
+        export const interpolatedMessage = <div>{$jsxify(() => $localize\`Hello!\`)}</div>;
         `);
     });
 
@@ -145,7 +226,7 @@ describe('transform', () => {
         const spaceInBetween = 'spaceInBetween';
 
         export const interpolatedMultiMessage =  <div>{$jsxify(
-                        $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! How was your \${"�#2/�"}:INTERPOLATION#2: \${"�#3/�"}:INTERPOLATION#3:? \${"�#4/�"}:INTERPOLATION#4:\${"�#5/�"}:INTERPOLATION#5:?\`,
+                        () => $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! How was your \${"�#2/�"}:INTERPOLATION#2: \${"�#3/�"}:INTERPOLATION#3:? \${"�#4/�"}:INTERPOLATION#4:\${"�#5/�"}:INTERPOLATION#5:?\`,
                         [greeting, name, superlative, event, no, spaceInBetween]
                 )}</div>
         `);
@@ -167,7 +248,7 @@ describe('transform', () => {
         const greetingEmoji = '👋';
 
         export const interpolatedComponentMessage =  <div>{$jsxify(
-                        $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! \${"�#2/�"}:INTERPOLATION#2:\`,
+                        () => $localize\`\${"�#0/�"}:INTERPOLATION#0: \${"�#1/�"}:INTERPOLATION#1:! \${"�#2/�"}:INTERPOLATION#2:\`,
                         [<Greeting/>, name, greetingEmoji]
                 )}</div>
         `);
@@ -182,7 +263,7 @@ describe('transform', () => {
 
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_hr#0:\`, [<hr/>])}</div>;
+        export const nestedHtml = <div>{$jsxify(() => $localize\`Hello \${"�#0/�"}:TAG_hr#0:\`, [<hr/>])}</div>;
         `);
     });
 
@@ -194,7 +275,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"�#0�"}:TAG_START_span#0:world!\${"�/#0�"}:TAG_END_span#0:\`,
+                        () => $localize\`Hello \${"�#0�"}:TAG_START_span#0:world!\${"�/#0�"}:TAG_END_span#0:\`,
                         [<span></span>]
                 )}</div>;
         `);
@@ -212,7 +293,7 @@ describe('transform', () => {
         const name = 'Jadzia';
 
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"�#0�"}:TAG_START_b#0:\${"�#1�"}:TAG_START_i#1:my friend \${"�#2/�"}:INTERPOLATION#2:\${"�/#1�"}:TAG_END_i#1:\${"�/#0�"}:TAG_END_b#0:!\`,
+                        () => $localize\`Hello \${"�#0�"}:TAG_START_b#0:\${"�#1�"}:TAG_START_i#1:my friend \${"�#2/�"}:INTERPOLATION#2:\${"�/#1�"}:TAG_END_i#1:\${"�/#0�"}:TAG_END_b#0:!\`,
                         [<b></b>, <i></i>, firstName]
                 )}</div>;
         `);
@@ -227,7 +308,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         const Greeting = () => <span>Hello!</span>;
-        export const nestedHtml = <div>{$jsxify($localize\`Hello \${"�#0/�"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
+        export const nestedHtml = <div>{$jsxify(() => $localize\`Hello \${"�#0/�"}:TAG_Greeting#0:\`, [<Greeting/>])}</div>;
         `);
     });
 
@@ -239,7 +320,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const nestedHtml = <div>{$jsxify(
-                        $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1/�"}:INTERPOLATION#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
+                        () => $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1/�"}:INTERPOLATION#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
                         [<Greeting kind="wild"></Greeting>, name]
                 )}</div>;
         `);
@@ -270,7 +351,7 @@ describe('transform', () => {
 
           const nestedJSX = (
             <div>{$jsxify(
-                $localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`,
+                () => $localize\`Hello \${"�#0/�"}:INTERPOLATION#0:!\`,
                 [loggedIn ? <UserProfile /> : 'world']
               )}</div>
           );
@@ -297,8 +378,8 @@ describe('transform', () => {
           const loggedIn = true;
 
           const nestedJSX = (
-            <div>{$jsxify($localize\`Hello \${"�#0/�"}:INTERPOLATION#0:\`, [
-                loggedIn ? <span>{$localize\`friend\`}</span> : <span>{$localize\`stranger\`}</span>
+            <div>{$jsxify(() => $localize\`Hello \${"�#0/�"}:INTERPOLATION#0:\`, [
+                loggedIn ? <span>{$jsxify(() => $localize\`friend\`)}</span> : <span>{$jsxify(() => $localize\`stranger\`)}</span>
               ])}</div>
           );
         `);
@@ -324,7 +405,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\`Hello world!\`)}</div>;
         `);
     });
 
@@ -334,7 +416,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\` Hello world! \`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\` Hello world! \`)}</div>;
         `);
     });
 
@@ -346,7 +429,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\`Hello world!\`)}</div>;
         `);
     });
 
@@ -359,7 +443,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\`Hello world!\`)}</div>;
         `);
     });
 
@@ -378,7 +463,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\`Hello world!\`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\`Hello world!\`)}</div>;
         `);
     });
 
@@ -392,7 +478,8 @@ describe('transform', () => {
         `, 'test');
 
       expect(code).toBe(`
-        export const whitespace = <div>{$localize\`\`}</div>;
+        import { $jsxify } from "@flarelabs-net/jsx-localize/react";
+        export const whitespace = <div>{$jsxify(() => $localize\`\`)}</div>;
         `);
     });
 
@@ -415,7 +502,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const complexWhitespace = <div>{$jsxify(
-            $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${"�#3/�"}:INTERPOLATION#3:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
+            () => $localize\`Hello \${"�#0�"}:TAG_START_Greeting#0:\${"�#1�"}:TAG_START_b#1:\${"�#2�"}:TAG_START_i#2:\${"�#3/�"}:INTERPOLATION#3:\${"�/#2�"}:TAG_END_i#2: !!!!!\${"�/#1�"}:TAG_END_b#1:\${"�/#0�"}:TAG_END_Greeting#0:\`,
             [<Greeting kind="wild"></Greeting>, <b></b>, <i></i>, name]
           )}</div>;
         `);
@@ -500,7 +587,7 @@ describe('transform', () => {
       expect(code).toBe(`
         import { $jsxify } from "@flarelabs-net/jsx-localize/react";
         export const i18nAttrNested = <p title={$localize\`some title\`}>{$jsxify(
-            $localize\`\${"�#0/�"}:TAG_img#0:\`,
+            () => $localize\`\${"�#0/�"}:TAG_img#0:\`,
             [<img alt={$localize\`a cute puppy pic\`} />]
           )}</p>
         `);

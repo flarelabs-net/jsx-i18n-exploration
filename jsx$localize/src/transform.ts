@@ -11,11 +11,8 @@ export function transform(code: string, moduleId: string): TransformResult {
   const [i18nElements, i18nElementMetadata] = findAndCleanupAllI18nMarkers(ast.program.body);
 
   if (i18nElements.length > 0) {
-    const shouldInjectJsxifyImport = rewriteI18nElements(i18nElements, i18nElementMetadata);
-
-    if (shouldInjectJsxifyImport) {
-      addJsxifyImport(ast.program.body);
-    }
+    addJsxifyImport(ast.program.body);
+    rewriteI18nElements(i18nElements, i18nElementMetadata);
   }
 
   const transformed = print(ast, {
@@ -161,8 +158,6 @@ function findAndCleanupAllI18nMarkers(rootNode: types.ASTNode): [types.namedType
 }
 
 function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nMetadata: string[]) {
-  let elementsContainElement = false;
-
   i18nElements.forEach((i18nElement, elementIndex) => {
 
     const templateExpressions: types.namedTypes.ExpressionStatement['expression'][] = [];
@@ -322,27 +317,39 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nMe
       })
     });
 
-    if (placeholderExpressions.length > 0) {
-      elementsContainElement = true;
+    // Note about deferred evaluation of $localize expressions:
+    //
+    // It's crucial that we generate arrow functions / a factory function in order to defer the evaluation of
+    // the nested $localize expression.
+    // If this evaluation is not deferred, any localizable string invoked from module
+    // initializer will not be localized using runtime internationalization (commonly used on the server side).
+    //
+    // Note that jsxify implementation must also defer calling this factory function until we are actually rendering UI.
+    const $localizeFactoryFn = types.builders.arrowFunctionExpression.from({
+      params: [],
+      body: $localizeExpression
+    });
 
-      const $jsxifyExpression = types.builders.callExpression.from({
+    const $jsxifyExpression = 
+      placeholderExpressions.length
+      ? types.builders.callExpression.from({
+          callee: types.builders.identifier.from({ name: '$jsxify' }),
+          arguments: [
+            $localizeFactoryFn,
+            types.builders.arrayExpression.from({
+              elements: placeholderExpressions
+            })
+          ]
+        })
+      : types.builders.callExpression.from({
         callee: types.builders.identifier.from({ name: '$jsxify' }),
         arguments: [
-          $localizeExpression,
-          types.builders.arrayExpression.from({
-            elements: placeholderExpressions
-          })
+          $localizeFactoryFn
         ]
       });
 
-      i18nElement.children = [types.builders.jsxExpressionContainer($jsxifyExpression)];
-
-    } else {
-      i18nElement.children = [types.builders.jsxExpressionContainer($localizeExpression)];
-    }
+    i18nElement.children = [types.builders.jsxExpressionContainer($jsxifyExpression)];
   });
-
-  return elementsContainElement;
 }
 
 
