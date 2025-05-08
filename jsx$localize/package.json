@@ -1,7 +1,7 @@
 {
   "name": "@flarelabs-net/jsx-localize",
   "description": "Exploration of an i18n solution for JSX",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "author": "Igor Minar<i@igor.dev>",
   "type": "module",
