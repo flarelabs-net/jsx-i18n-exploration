@@ -35,7 +35,24 @@ export default async function handleRequest(
   // If you have middleware enabled:
   // loadContext: unstable_RouterContextProvider
 ) {
-  return new Promise(async (resolve, reject) => {
+  // Load translations!
+  // 
+  // Usually we'd read the accept-language header to determine the locale
+  // but in this demo we just pick locale based on which localized version of the app we run
+  // This hack is mainly because react-router-server doesn't allow for assets directory to be configurable,
+  // so we don't have an easy way in this demo to serve the localized assets without cloning the app
+  // once for each locale
+  // 
+  // We also skip localization in dev mode and render the inlined original/fallback strings.
+  if (!import.meta.env.DEV) {
+    const translationCatalog = process.argv[2].includes("/sk/")
+        ? await catalogImports[`../messages-sk.json`]()
+        : catalogImports[`../messages-en.json`]();
+    loadTranslations(translationCatalog.translations);
+    console.log('loaded translation for locale:', translationCatalog.locale);
+  }
+
+  return new Promise((resolve, reject) => {
     let shellRendered = false;
     let userAgent = request.headers.get("user-agent");
 
@@ -45,9 +62,6 @@ export default async function handleRequest(
       (userAgent && isbot(userAgent)) || routerContext.isSpaMode
         ? "onAllReady"
         : "onShellReady";
-
-        const translationCatalog = await catalogImports[`../messages-sk.json`]() //catalogImports[`../messages-en.json`]()
-    loadTranslations(translationCatalog.translations);
 
 
     const { pipe, abort } = renderToPipeableStream(

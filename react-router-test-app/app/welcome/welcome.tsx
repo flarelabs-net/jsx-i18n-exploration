@@ -1,4 +1,3 @@
-import '@flarelabs-net/jsx-localize/react';
 import { useState} from 'react';
 
 const helloTopLevelJSX = <i18n>Hello world!</i18n>;
@@ -126,12 +125,12 @@ export function Welcome() {
       </div>
 
 
-      <img title="a puppy pic" i18n-attr-title src="https://placehold.co/50x50/png" />
+      <img title="a puppy pic" i18n-title src="https://placehold.co/50x50/png" />
 
 
       <div i18n>
         This is a pic of my dog:
-        <img alt="dog pic" i18n-attr-alt src="https://placehold.co/50x50/png"/>
+        <img alt="dog pic" i18n-alt src="https://placehold.co/50x50/png"/>
       </div>
 
       {helloTopLevelJSX}

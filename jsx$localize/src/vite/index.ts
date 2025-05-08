@@ -10,7 +10,7 @@ export default function jsx$localize() {
       if (!id.endsWith('.tsx')) {
         return;
       }
-      console.info('jsx$localize transforming:', id);
+      //console.debug('jsx$localize transforming:', id);
 
       const transformed = transform(code, id);
 

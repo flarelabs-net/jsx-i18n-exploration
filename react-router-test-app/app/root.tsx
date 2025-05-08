@@ -1,3 +1,4 @@
+import '@flarelabs-net/jsx-localize/react';
 import {
   isRouteErrorResponse,
   Links,
