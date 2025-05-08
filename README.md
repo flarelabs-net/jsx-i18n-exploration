@@ -38,10 +38,10 @@ or if you want to avoid the extra `<div>` wrapper, write just:
 <i18n>Hello world!</i18n>
 ```
 
-Additionally, you can also internationalize element attributes by adding a matching `i18n-attr-<attributeName>` attribute to the element:
+Additionally, you can also internationalize element attributes by adding a matching `i18n-<attributeName>` attribute to the element:
 
 ```tsx
-<img alt="a cute puppy pic" i18n-attr-alt />
+<img alt="a cute puppy pic" i18n-alt />
 ```
 
 That's it!

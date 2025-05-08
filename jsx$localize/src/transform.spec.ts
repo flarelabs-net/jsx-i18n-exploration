@@ -509,11 +509,11 @@ describe('transform', () => {
     });
   });
 
-  describe('i18n-attr', () => {
+  describe('i18n-* pseudo attribute', () => {
 
-    it('should transform a simple i18n-attr-', () => {
+    it('should transform a simple i18n-* attribute', () => {
       const {code} = transform(`
-        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt/>;
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-alt/>;
         `, 'test');
 
       expect(code).toBe(`
@@ -521,9 +521,9 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform a simple i18n-attr- with description', () => {
+    it('should transform a simple i18n-* attribute with description', () => {
       const {code} = transform(`
-        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="puppy image title text"/>;
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-alt="puppy image title text"/>;
         `, 'test');
 
       expect(code).toBe(`
@@ -531,9 +531,9 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform a simple i18n-attr- with meaning', () => {
+    it('should transform a simple i18n-* attribute with meaning', () => {
       const {code} = transform(`
-        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="login screen|"/>;
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-alt="login screen|"/>;
         `, 'test');
 
       expect(code).toBe(`
@@ -541,9 +541,9 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform a simple i18n-attr- with id', () => {
+    it('should transform a simple i18n-* attribute with id', () => {
       const {code} = transform(`
-        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="@@myTitleId"/>;
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-alt="@@myTitleId"/>;
         `, 'test');
 
       expect(code).toBe(`
@@ -551,9 +551,9 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform a simple i18n-attr- with meaning, description, and id', () => {
+    it('should transform a simple i18n-* attribute with meaning, description, and id', () => {
       const {code} = transform(`
-        export const i18nAttr = <img alt="a cute puppy pic" i18n-attr-alt="login screen|puppy image title text@@myTitleId"/>;
+        export const i18nAttr = <img alt="a cute puppy pic" i18n-alt="login screen|puppy image title text@@myTitleId"/>;
         `, 'test');
 
       expect(code).toBe(`
@@ -562,11 +562,11 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform multiple i18n-attr- attributes', () => {
+    it('should transform multiple i18n-* attribute attributes', () => {
       const {code} = transform(`
-        export const i18nAttrMultiple = <img alt="a cute puppy pic" i18n-attr-alt
-                                             src="some-img.png" i18n-attr-src
-                                             foo="bar" i18n-attr-foo />;
+        export const i18nAttrMultiple = <img alt="a cute puppy pic" i18n-alt
+                                             src="some-img.png" i18n-src
+                                             foo="bar" i18n-foo />;
         `, 'test');
 
       expect(code).toBe(`
@@ -577,10 +577,10 @@ describe('transform', () => {
         `);
     });
 
-    it('should transform an i18n-attr attributes on i18n blocks and nested within', () => {
+    it('should transform an i18n-* attribute on i18n blocks and nested within', () => {
       const {code} = transform(`
-        export const i18nAttrNested = <p i18n title="some title" i18n-attr-title>
-            <img alt="a cute puppy pic" i18n-attr-alt/>
+        export const i18nAttrNested = <p i18n title="some title" i18n-title>
+            <img alt="a cute puppy pic" i18n-alt/>
           </p>
         `, 'test');
 
@@ -593,29 +593,29 @@ describe('transform', () => {
         `);
     });
 
-    it('should error if i18n-attr- attribute is bound to an expression', () => {
+    it('should error if i18n-* attribute attribute is bound to an expression', () => {
       expect(() => {
         transform(`
-          export const i18nAttr = <img i18n-attr-alt={'foo'} alt="foo"/>;
+          export const i18nAttr = <img i18n-alt={'foo'} alt="foo"/>;
           `, 'test');
-      }).toThrow(`i18n error: value of attribute 'i18n-attr-alt' must be a literal, was: JSXExpressionContainer`);
+      }).toThrow(`i18n error: value of attribute 'i18n-alt' must be a literal, was: JSXExpressionContainer`);
     });
 
-    it('should error if i18n-attr- points to an attribute bound to an expression', () => {
+    it('should error if i18n-* attribute points to an attribute bound to an expression', () => {
       expect(() => {
         transform(`
-          export const i18nAttr = <img i18n-attr-alt alt={'foo'}/>;
+          export const i18nAttr = <img i18n-alt alt={'foo'}/>;
           `, 'test');
       }).toThrow(`i18n error: value of attribute 'alt' must be a literal, was: JSXExpressionContainer`);
     });
 
 
-    it(`should error if i18n-attr- is used without a matching attribute`, () => {
+    it(`should error if i18n-* attribute is used without a matching attribute`, () => {
       expect(() => {
         transform(`
-          export const i18nAttr = <img i18n-attr-title/>;
+          export const i18nAttr = <img i18n-title/>;
           `, 'test');
-      }).toThrow(`i18n error: attribute 'i18n-attr-title' doesn't have matching peer attribute 'title' on element 'img'`);
+      }).toThrow(`i18n error: attribute 'i18n-title' doesn't have matching peer attribute 'title' on element 'img'`);
     });
 
   });

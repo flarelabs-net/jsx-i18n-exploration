@@ -104,24 +104,24 @@ function findAndCleanupAllI18nMarkers(rootNode: types.ASTNode): [types.namedType
           i18nElements.push(elementNode);
         }
 
-        // look for i18n-attr-* attributes on the current element that identify internationalizable attributes
-        const i18nAttrStarAttrs = elementNode.openingElement.attributes?.filter((attr, index) => {
+        // look for i18n-* attributes on the current element that identify internationalizable attributes
+        const i18nStarAttrs = elementNode.openingElement.attributes?.filter((attr, index) => {
           if (types.namedTypes.JSXAttribute.check(attr) &&
               typeof attr.name.name === 'string' && 
-              attr.name.name.startsWith('i18n-attr-')) {
-            // Drop the i18n-attr-* attribute
+              attr.name.name.startsWith('i18n-')) {
+            // Drop the i18n-* attribute
             elementNode.openingElement.attributes?.splice(index, 1);
             return true;
           }
         }) as types.namedTypes.JSXAttribute[];
 
-        i18nAttrStarAttrs?.forEach((i18nAttrStarAttr) => {
-          if (typeof i18nAttrStarAttr.name.name !== 'string') {
-            throw new Error('i18n-attr-* attribute name must be a string, was: ' + i18nAttrStarAttr.name.name.type);
+        i18nStarAttrs?.forEach((i18nStarAttr) => {
+          if (typeof i18nStarAttr.name.name !== 'string') {
+            throw new Error('i18n-* attribute name must be a string, was: ' + i18nStarAttr.name.name.type);
           }
           
-          const i18nAttrStarAttrName = i18nAttrStarAttr.name.name;
-          const attrName = i18nAttrStarAttrName.replace('i18n-attr-', '');
+          const i18nStarAttrName = i18nStarAttr.name.name;
+          const attrName = i18nStarAttrName.replace('i18n-', '');
 
           const matchingAttr = elementNode.openingElement.attributes?.find(attr => {
             if (types.namedTypes.JSXAttribute.check(attr) &&
@@ -132,20 +132,20 @@ function findAndCleanupAllI18nMarkers(rootNode: types.ASTNode): [types.namedType
 
           if (!matchingAttr) {
               // @ts-ignore
-              throw new Error(`i18n error: attribute '${i18nAttrStarAttrName}' doesn't have matching peer attribute '${attrName}' on element '${elementNode.openingElement.name.name}'`);
+              throw new Error(`i18n error: attribute '${i18nStarAttrName}' doesn't have matching peer attribute '${attrName}' on element '${elementNode.openingElement.name.name}'`);
           }
 
           if (!types.namedTypes.JSXAttribute.check(matchingAttr)) {
             throw new Error('Unsupported attribute type: ' + matchingAttr.type);
           }
 
-          const i18nAttrValue = i18nAttrStarAttr.value;
+          const i18nStarValue = i18nStarAttr.value;
 
-          if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) {
-            throw new Error(`i18n error: value of attribute '${i18nAttrStarAttrName}' must be a literal, was: ${i18nAttrValue?.type}`);
+          if (i18nStarValue && !types.namedTypes.Literal.check(i18nStarValue)) {
+            throw new Error(`i18n error: value of attribute '${i18nStarAttrName}' must be a literal, was: ${i18nStarValue?.type}`);
           }
           
-          const i18nMetadata = i18nAttrValue ? `${i18nAttrValue?.value}` : '';
+          const i18nMetadata = i18nStarValue ? `${i18nStarValue?.value}` : '';
 
           rewriteI18nAttribute(matchingAttr, i18nMetadata);
         });
@@ -353,13 +353,13 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nMe
 }
 
 
-function rewriteI18nAttribute(attribute: types.namedTypes.JSXAttribute, i18nAttrStarMetadata: string) {
+function rewriteI18nAttribute(attribute: types.namedTypes.JSXAttribute, i18nStarMetadata: string) {
     if (!types.namedTypes.Literal.check(attribute.value)) {
       throw new Error(`i18n error: value of attribute '${attribute.name.name}' must be a literal, was: ${attribute.value?.type}`);
     }
 
     const attrValue = attribute.value.value;
-    const valueMetadataPrefix = i18nAttrStarMetadata ? `:${i18nAttrStarMetadata}:` : '';
+    const valueMetadataPrefix = i18nStarMetadata ? `:${i18nStarMetadata}:` : '';
 
     const $localizeExpression = types.builders.taggedTemplateExpression.from({
       tag: types.builders.identifier.from({ name: '$localize' }),
