@@ -1,0 +1,19 @@
+{
+  "locale": "sk",
+  "translations": {
+    "3022994926184248873": "Ahoj svet!",
+    "1883009908439134069": "Ahoj mesiac bez div-ov!",
+    "5409276029299992559": "Ahoj {$INTERPOLATION#0}!",
+    "3851164729407824548": "Klikni a pridaj: {$TAG_START_button#0}pocet={$INTERPOLATION#1}{$TAG_END_button#0}",
+    "3068867521678628916": "Ahoj {$TAG_START_b#0}{$TAG_START_i#1}moj priatel {$INTERPOLATION#2}{$TAG_END_i#1}{$TAG_END_b#0}!",
+    "2440984797904254266": "*predpona*{$TAG_START_u#0}{$TAG_START_Greeting#1}bonus{$TAG_END_Greeting#1}{$TAG_END_u#0}*koncovka*",
+    "7680262756773208259": "*predpona*{$TAG_START_u#0}{$TAG_Greeting#1}{$TAG_END_u#0}*koncovka*",
+    "3425301371500802564": "*predpona*{$TAG_START_u#0}druhy: {$TAG_Greeting#2}prvy: {$TAG_Greeting#1}{$TAG_END_u#0}*koncovka*",
+    "7038478515118200521": "Ahoj {$INTERPOLATION#0}",
+    "851356095055752738": "priatel",
+    "1731727367063270301": "cudzinec",
+    "3199041561936129511": "foto psika",
+    "532397050525213557": "Toto je foto mojho psa:{$TAG_img#0}",
+    "4428182456273842227": "foto psa"
+  }
+}

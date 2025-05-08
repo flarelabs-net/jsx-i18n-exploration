@@ -5,111 +5,119 @@
       <trans-unit id="3022994926184248873" datatype="html">
         <source>Hello world!</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12039</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">208</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12104</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">209</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12105</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="1883009908439134069" datatype="html">
-        <source>Hello div-less moon!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12106</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="5409276029299992559" datatype="html">
-        <source>Hello <x id="INTERPOLATION#0" equiv-text="&quot;�#0/�&quot;"/>!</source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12107</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">236</context>
         </context-group>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12129</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="3851164729407824548" datatype="html">
-        <source>Click to increment: <x id="TAG_START_button#0" ctype="x-start_button#0" equiv-text="&quot;�#0�&quot;"/>count=<x id="INTERPOLATION#1" equiv-text="&quot;�#1/�&quot;"/><x id="TAG_END_button#0" ctype="x-end_button#0" equiv-text="&quot;�/#0�&quot;"/></source>
-        <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12109</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">237</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3068867521678628916" datatype="html">
         <source>Hello <x id="TAG_START_b#0" ctype="x-start_b#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_START_i#1" ctype="x-start_i#1" equiv-text="&quot;�#1�&quot;"/>my friend <x id="INTERPOLATION#2" equiv-text="&quot;�#2/�&quot;"/><x id="TAG_END_i#1" ctype="x-end_i#1" equiv-text="&quot;�/#1�&quot;"/><x id="TAG_END_b#0" ctype="x-end_b#0" equiv-text="&quot;�/#0�&quot;"/>!</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12113</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">212</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">248</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="1883009908439134069" datatype="html">
+        <source>Hello div-less moon!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">238</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="5409276029299992559" datatype="html">
+        <source>Hello <x id="INTERPOLATION#0" equiv-text="&quot;�#0/�&quot;"/>!</source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">239</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">264</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="3851164729407824548" datatype="html">
+        <source>Click to increment: <x id="TAG_START_button#0" ctype="x-start_button#0" equiv-text="&quot;�#0�&quot;"/>count=<x id="INTERPOLATION#1" equiv-text="&quot;�#1/�&quot;"/><x id="TAG_END_button#0" ctype="x-end_button#0" equiv-text="&quot;�/#0�&quot;"/></source>
+        <context-group purpose="location">
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">241</context>
         </context-group>
       </trans-unit>
       <trans-unit id="2440984797904254266" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_START_Greeting#1" ctype="x-start_greeting#1" equiv-text="&quot;�#1�&quot;"/>extra<x id="TAG_END_Greeting#1" ctype="x-end_greeting#1" equiv-text="&quot;�/#1�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12117</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">252</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7680262756773208259" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/><x id="TAG_Greeting#1" ctype="x-greeting#1" equiv-text="&quot;�#1/�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12121</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">256</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3425301371500802564" datatype="html">
         <source>*prefix*<x id="TAG_START_u#0" ctype="x-start_u#0" equiv-text="&quot;�#0�&quot;"/>first: <x id="TAG_Greeting#1" ctype="x-greeting#1" equiv-text="&quot;�#1/�&quot;"/>second: <x id="TAG_Greeting#2" ctype="x-greeting#2" equiv-text="&quot;�#2/�&quot;"/><x id="TAG_END_u#0" ctype="x-end_u#0" equiv-text="&quot;�/#0�&quot;"/>*suffix*</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12125</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">260</context>
         </context-group>
       </trans-unit>
       <trans-unit id="7038478515118200521" datatype="html">
         <source>Hello <x id="INTERPOLATION#0" equiv-text="&quot;�#0/�&quot;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12132</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">267</context>
         </context-group>
       </trans-unit>
       <trans-unit id="851356095055752738" datatype="html">
         <source>friend</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12133</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">268</context>
         </context-group>
       </trans-unit>
       <trans-unit id="1731727367063270301" datatype="html">
         <source>stranger</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12133</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">268</context>
         </context-group>
       </trans-unit>
       <trans-unit id="3199041561936129511" datatype="html">
         <source>a puppy pic</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12135</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">270</context>
         </context-group>
       </trans-unit>
       <trans-unit id="532397050525213557" datatype="html">
         <source>This is a pic of my dog:<x id="TAG_img#0" ctype="x-img#0" equiv-text="&quot;�#0/�&quot;"/></source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12137</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">272</context>
         </context-group>
       </trans-unit>
       <trans-unit id="4428182456273842227" datatype="html">
         <source>dog pic</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">dist/assets/index-CVnVFOPU.js</context>
-          <context context-type="linenumber">12138</context>
+          <context context-type="sourcefile">build/server/index.js</context>
+          <context context-type="linenumber">273</context>
         </context-group>
       </trans-unit>
     </body>

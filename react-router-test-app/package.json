@@ -1,0 +1,38 @@
+{
+  "name": "react-router-test-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc",
+    "extract-messages": "pnpm build && pnpm extract-messages:json && pnpm extract-messages:xlif",
+    "extract-messages:json": "localize-extract --source build/**/*.js --format json --outputPath messages-en.json",
+    "extract-messages:xlif": "localize-extract --source build/**/*.js --format xlif --outputPath messages-en.xlf",
+    "translate:json": "rm -rf build-localized && localize-translate --root build/client/ --source '**' --source-locale en  --translations ./messages-sk.json --missingTranslation error --outputPath build-localized/{{LOCALE}}/client && cp -r build/server build-localized/sk/ && sed -i '' 's/build\\\/client/build-localized\\\/sk\\\/client/g' build-localized/sk/server/index.js && cp -r build/server build-localized/en/ && sed -i '' 's/build\\\/client/build-localized\\\/en\\\/client/g' build-localized/en/server/index.js ",
+    "preview:en": "react-router-serve build-localized/en/server/index.js",
+    "preview:sk": "react-router-serve build-localized/sk/server/index.js",
+    "build-and-preview": "pnpm build && pnpm extract-messages:json && pnpm extract-messages:xlif && pnpm translate:json && pnpm run preview:sk"
+  },
+  "dependencies": {
+    "@react-router/node": "^7.5.3",
+    "@react-router/serve": "^7.5.3",
+    "isbot": "^5.1.27",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router": "^7.5.3"
+  },
+  "devDependencies": {
+    "@angular/localize": "^19.1.4",
+    "@react-router/dev": "^7.5.3",
+    "@tailwindcss/vite": "^4.1.4",
+    "@types/node": "^20",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3",
+    "vite": "catalog:",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

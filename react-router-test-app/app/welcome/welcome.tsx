@@ -1,19 +1,12 @@
-import '@angular/localize/init';
-import './App.css';
 import '@flarelabs-net/jsx-localize/react';
-
-import { useState } from 'react';
+import { useState} from 'react';
 
 const helloTopLevelJSX = <i18n>Hello world!</i18n>;
 const helloTopLevelString =  $localize`Hello world!`;
+const foo = 'bar';
+const helloTopLevelInterpolation =  <div i18n>Hello <b><i>my friend {foo}</i></b>!</div>;
 
-
-function App() {
-  
-
-  // TODO: plural/select support
-  // https://v17.angular.io/guide/i18n-common-prepare#icu-expressions
-  // https://unicode-org.github.io/icu/userguide/format_parse/messages/#messageformat
+export function Welcome() {
 
   function Greeting({ name, children }: {name: string, children?: any}) {
     return <i>Hello {name}!{children}</i>;
@@ -28,7 +21,7 @@ function App() {
 
   let firstName = 'George';
 
-  const loggedIn = Math.random() > 0.5;
+  const loggedIn = Math.random() > 0;
   const UserProfile = function () {
     return <>userprofile</>;
   };
@@ -70,7 +63,7 @@ function App() {
 
 
       <div i18n>
-        Click to increment: <button onClick={increment}>count={count}</button>
+        Click to increment: <button onClick={increment} style={{border: "1px solid red", backgroundColor: "grey"}}>count={count}</button>
       </div>
 
       {/* compare to status quo:
@@ -143,8 +136,7 @@ function App() {
 
       {helloTopLevelJSX}
       {helloTopLevelString}
+      {helloTopLevelInterpolation}
     </>
   );
 }
-
-export default App;
