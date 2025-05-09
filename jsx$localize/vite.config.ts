@@ -13,6 +13,7 @@ export default defineConfig({
 		},
 		rollupOptions: {
       external: [
+				'@angular/localize',
         'os', // suppress vite warning when processing recast
         'react',
         'react/jsx-runtime',
