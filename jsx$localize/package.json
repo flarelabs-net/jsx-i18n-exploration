@@ -1,25 +1,25 @@
 {
   "name": "@flarelabs-net/jsx-localize",
   "description": "Exploration of an i18n solution for JSX",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "license": "MIT",
   "author": "Igor Minar<i@igor.dev>",
   "type": "module",
   "exports": {
 		"./react": {
 			"import": "./dist/react.js",
-      "types": "./dist/react.d.ts"
+      "types": "./dist/react.d.ts",
+      "sideEffects": "./dist/react.js"
 		},
 		"./vite": {
 			"import": "./dist/vite.js"
 		}
 	},
-  "sideEffects": true,
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsc -b && vite build && cp ./src/react/globals.ts ./dist/react.d.ts",
+    "build": "tsc -b && vite build && cp ./src/react/globals.d.ts ./dist/react.d.ts",
     "test": "vitest"
   },
   "dependencies": {

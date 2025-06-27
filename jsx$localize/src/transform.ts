@@ -81,74 +81,6 @@ function findAndCleanupAllI18nMarkers(rootNode: types.ASTNode): [types.namedType
 
             i18nElements.push(path.node);
 
-      } else {
-        // look for i18n attribute that identifies a translation block
-        const i18nAttr = elementNode.openingElement.attributes?.find((attr, index) => {
-          if (types.namedTypes.JSXAttribute.check(attr) &&
-              typeof attr.name.name === 'string' && 
-              attr.name.name === 'i18n') {
-            // Drop the i18n attribute
-            elementNode.openingElement.attributes?.splice(index, 1);
-            return true;
-          }
-        }) as types.namedTypes.JSXAttribute | undefined;
-
-        if (i18nAttr) {
-          const i18nAttrValue = i18nAttr.value;
-
-          if (i18nAttrValue && !types.namedTypes.Literal.check(i18nAttrValue)) {
-            throw new Error('i18n attribute value must be a literal, was: ' + i18nAttrValue?.type);
-          }
-
-          i18nMetadata.push(`${i18nAttrValue?.value ?? ''}`);
-          i18nElements.push(elementNode);
-        }
-
-        // look for i18n-* attributes on the current element that identify internationalizable attributes
-        const i18nStarAttrs = elementNode.openingElement.attributes?.filter((attr, index) => {
-          if (types.namedTypes.JSXAttribute.check(attr) &&
-              typeof attr.name.name === 'string' && 
-              attr.name.name.startsWith('i18n-')) {
-            // Drop the i18n-* attribute
-            elementNode.openingElement.attributes?.splice(index, 1);
-            return true;
-          }
-        }) as types.namedTypes.JSXAttribute[];
-
-        i18nStarAttrs?.forEach((i18nStarAttr) => {
-          if (typeof i18nStarAttr.name.name !== 'string') {
-            throw new Error('i18n-* attribute name must be a string, was: ' + i18nStarAttr.name.name.type);
-          }
-          
-          const i18nStarAttrName = i18nStarAttr.name.name;
-          const attrName = i18nStarAttrName.replace('i18n-', '');
-
-          const matchingAttr = elementNode.openingElement.attributes?.find(attr => {
-            if (types.namedTypes.JSXAttribute.check(attr) &&
-                types.namedTypes.JSXIdentifier.check(attr.name) &&
-                attr.name.name === attrName) {
-              return true;
-            }});
-
-          if (!matchingAttr) {
-              // @ts-ignore
-              throw new Error(`i18n error: attribute '${i18nStarAttrName}' doesn't have matching peer attribute '${attrName}' on element '${elementNode.openingElement.name.name}'`);
-          }
-
-          if (!types.namedTypes.JSXAttribute.check(matchingAttr)) {
-            throw new Error('Unsupported attribute type: ' + matchingAttr.type);
-          }
-
-          const i18nStarValue = i18nStarAttr.value;
-
-          if (i18nStarValue && !types.namedTypes.Literal.check(i18nStarValue)) {
-            throw new Error(`i18n error: value of attribute '${i18nStarAttrName}' must be a literal, was: ${i18nStarValue?.type}`);
-          }
-          
-          const i18nMetadata = i18nStarValue ? `${i18nStarValue?.value}` : '';
-
-          rewriteI18nAttribute(matchingAttr, i18nMetadata);
-        });
       }
       this.traverse(path);
     }
@@ -352,33 +284,6 @@ function rewriteI18nElements(i18nElements: types.namedTypes.JSXElement[], i18nMe
   });
 }
 
-
-function rewriteI18nAttribute(attribute: types.namedTypes.JSXAttribute, i18nStarMetadata: string) {
-    if (!types.namedTypes.Literal.check(attribute.value)) {
-      throw new Error(`i18n error: value of attribute '${attribute.name.name}' must be a literal, was: ${attribute.value?.type}`);
-    }
-
-    const attrValue = attribute.value.value;
-    const valueMetadataPrefix = i18nStarMetadata ? `:${i18nStarMetadata}:` : '';
-
-    const $localizeExpression = types.builders.taggedTemplateExpression.from({
-      tag: types.builders.identifier.from({ name: '$localize' }),
-      quasi: types.builders.templateLiteral.from({
-        expressions: [],
-        quasis: [types.builders.templateElement.from({
-          value: {
-            raw: `${valueMetadataPrefix}${attrValue}`,
-            cooked: `${valueMetadataPrefix}${attrValue}`
-          },
-          tail: false
-        })]
-      })
-    });
-
-    attribute.value = types.builders.jsxExpressionContainer.from({
-      expression: $localizeExpression
-    });
-}
 
 function addJsxifyImport(rootNode: Array<types.ASTNode>) {
   const importDeclaration = types.builders.importDeclaration(

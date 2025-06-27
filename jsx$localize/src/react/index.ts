@@ -1,3 +1,3 @@
 export * from "./jsxify";
 import "./localize-override";
-import "./globals";
+import "./globals.d.ts";

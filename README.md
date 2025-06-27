@@ -2,7 +2,7 @@
 
 Goal: Could internationalization of JSX/TSX templates be as natural as writing JSX itself?
 
-This project attempts to achieve that goal via a JSX pre-processor that can run as a Vite plugin in a way that mimics how [Angular's i18n works](https://angular.dev/guide/i18n/prepare).
+This project attempts to achieve that goal via a JSX pre-processor that can run as a Vite plugin and produces `$localize` calls, in a way that mimics how [Angular's i18n works](https://angular.dev/guide/i18n/prepare).
 
 ## Getting started
 
@@ -29,33 +29,24 @@ For example instead of
 write
 
 ```tsx
-<div i18n>Hello world!</div>
+<i18n><div>Hello world!</div></i18n>
 ```
-
-or if you want to avoid the extra `<div>` wrapper, write just:
-
-```tsx
-<i18n>Hello world!</i18n>
-```
-
-Additionally, you can also internationalize element attributes by adding a matching `i18n-<attributeName>` attribute to the element:
-
-```tsx
-<img alt="a cute puppy pic" i18n-alt />
-```
-
 That's it!
 
-To extract the "Hello world!" string, run `npm extract-messages`.
-The message will be stored in [`messages.json`](./messages.json) file along with its fingerprint.
+Why is this cool?
 
-To translate a newly added message, append the translated message using the same fingerprint key to [`messages-sk.json`](./messages-sk.json) and return `pnpm build-and-preview`.
-
-## Example usage
+Mainly because you can now write JSX templates with string interpolation or even nested html and components and the preprocessor will take care of making the JSX internationalizable.
 
 See [src/App.tsx](./src/App.tsx#L57-L165) for many usage examples.
 
-Even more examples can be found in the test suite: [./jsx$localize/transform.spec.ts](./jsx$localize/transform.spec.ts)
+Even more examples can be found in the test suite: [./jsx$localize/src/transform.spec.ts](./jsx$localize/src/transform.spec.ts)
+
+# Message extraction & app localization
+
+To extract the "Hello world!" string, run `pnpm extract-messages`.
+The message will be stored in [`messages.json`](./messages.json) file along with its fingerprint.
+
+To translate a newly added message, append the translated message using the same fingerprint key to [`messages-sk.json`](./messages-sk.json) and return `pnpm build-and-preview`.
 
 
 ## How does it work?

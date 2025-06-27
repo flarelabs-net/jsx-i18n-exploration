@@ -1,7 +1,5 @@
 import '@angular/localize/init';
 import './App.css';
-import '@flarelabs-net/jsx-localize/react';
-
 import { useState } from 'react';
 
 const helloTopLevelJSX = <i18n>Hello world!</i18n>;
@@ -26,122 +24,123 @@ function App() {
     console.log(count);
   }
 
-  let firstName = 'George';
+  const firstName = 'George';
 
   const loggedIn = Math.random() > 0.5;
   const UserProfile = function () {
     return <>userprofile</>;
   };
 
-  const puppyName = 'Jadzia';
-
   return (
     <>
-      <div i18n>
-        Hello world!
-      </div>
-
-      { /* or alternatively using pseudo <i18n element, without the <div> element wrapper */}
       <i18n>
         Hello world!
       </i18n>
+
+      <hr/>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" />
       */}
 
 
-      <i18n>
-        Hello div-less moon!
-      </i18n>
+      <div>
+        <i18n>
+          Hello div-wrapped moon!
+        </i18n>
+      </div>
 
       {/* compare to status quo:
-      <Trans id="welcome.friendly-moon-greeting" />
+      <div><Trans id="welcome.friendly-moon-greeting" /></div>
       */}
 
+      <hr/>
 
-      <div i18n>
+      <i18n>
         Hello {firstName}!
-      </div>
+      </i18n>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" vars={{name: firstName}} />
       */}
 
+      <hr/>
 
-      <div i18n>
+      <i18n>
         Click to increment: <button onClick={increment}>count={count}</button>
-      </div>
+      </i18n>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" ???? />
       */}
 
+      <hr/>
 
-      <div i18n>
+      <i18n>
         Hello <b><i>my friend {firstName}</i></b>!
-      </div>
+      </i18n>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" vars={{name: firstName}} />
       */}
 
 
-      <div i18n>
+      <i18n>
         *prefix*
         <u>
           <Greeting name={firstName}>extra</Greeting>
         </u>
         *suffix*
-      </div>
+      </i18n>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" Components={[Greeting]} componentProps={[{name: firstName}]} />
       */}
 
+      <hr/>
 
-      <div i18n>
+      <i18n>
         *prefix*
         <u>
           <Greeting name="self-closing"/>
         </u>
         *suffix*
-      </div>
+      </i18n>
 
       {/* compare to status quo:
-      <Trans id="welcome.friendly-greeting" Components={[Greeting]} componentProps={[{name: "self-closing"}]} />
+      <Trans id="welcome.friendly-greeting" Components={[Greeting]} componentProps={[{name: "swapped"}]} />
       */}
 
-      <div i18n>
+      <hr/>
+
+      <i18n>
         *prefix*
         <u>
           first: <Greeting name="swapped"/>
           second: <Greeting name="double"/>
         </u>
         *suffix*
-      </div>
+      </i18n>
 
       {/* compare to status quo:
       <Trans id="welcome.friendly-greeting" Components={[Greeting, Greeting]} componentProps={[{name: "swapped"}, {name: "double"}]} />
       */}
 
-      <div i18n>Hello {loggedIn ? <UserProfile /> : 'world'}!</div>
+      <hr/>
 
+      <i18n>Hello {loggedIn ? <UserProfile /> : 'world'}!</i18n>
 
-      <div i18n>
-        Hello {loggedIn ? <span i18n>friend</span> : <span i18n>stranger</span>}
-      </div>
+      <hr/>
 
+      <i18n>
+        Hello {loggedIn ? <span><i18n>friend</i18n></span> : <span><i18n>stranger</i18n></span>}
+      </i18n>
 
-      <img title="a puppy pic" i18n-title src="https://placehold.co/50x50/png" />
-
-
-      <div i18n>
-        This is a pic of my dog:
-        <img alt="dog pic" i18n-alt src="https://placehold.co/50x50/png"/>
-      </div>
-
+      <hr/>
+      
       {helloTopLevelJSX}
+
+      <hr/>
       {helloTopLevelString}
     </>
   );

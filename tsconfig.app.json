@@ -22,9 +22,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
 
+    "types": ["./jsx$localize/src/react/globals.d.ts", "vite/client"],
+
     "paths": {
       "@flarelabs-net/jsx-localize/react": ["./jsx$localize/src/react/index.ts"],
     }
   },
-  "include": ["src"]
+  "files": ["src/main.tsx"]
 }
